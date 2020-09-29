@@ -1,0 +1,19 @@
+{
+  "CanvasAPIKey": "",
+  "CanvasAPIURL": "https://youinstitution.instructure.com",
+  "ASAPurl": "https://api.asapconnected.com/api/login",
+  "ASAPuserid": "",
+  "ASAPorgid": "",
+  "ASAPpassword": "",
+  "ASAPAPIKey": "",
+  "ASAPapiurl": "https://api.asapconnected.com/api/Enrollments?includeAttendance=false&classStartDate=09-01-2020",
+  "logfilepath": ".ASAPCanvas",
+  "logfilename": "canvasASAP.log",
+  "ASAPlastposfile": "lastrecordasap.csv",
+  "SendInfoEmails": "True",
+  "SendInfoEmailAddr": "addresstosendwhatitdidmessagesto",
+  "Debug": "True",
+  "DebugEmailAddr": "addresstosenddebugsto",
+  "NewUserCourse": "767",
+  "SkipCourses": ["5", "6"]
+}
