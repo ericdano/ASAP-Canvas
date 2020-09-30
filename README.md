@@ -13,3 +13,11 @@ Using Python, API calls, <a href="https://pandas.pydata.org/">Pandas for Python<
 
 ASAP-Canvas uses Python 3.8.5, <a href="https://pandas.pydata.org/">Pandas for Python</a>, and <a href="https://github.com/ucfopen/canvasapi">CanvasAPI</a>
 You will also need an API key generated from your Canvas instance, and an API key from ASAP Connected.
+
+<h2>Installation</h2>
+You need <a href="https://www.python.org/downloads/">Python 3.8.5</a>
+You need <a href="https://www.pypa.io/en/latest/">PIP installed</a>
+You need the <a href="https://github.com/ucfopen/canvasapi">CanvasAPI library</a>. With Python installed, you can run "pip install canvasapi"
+You need <a href="https://pandas.pydata.org/">Pandas for Python</A> installed.
+You also need some sort of SMTP server to receive status messages from it (emails saying it added X number of students, etc, etc)
+This python script should run on any computer. You probably want to set it up to run hourly? Daily? Your pick. This script was developed on Windows and Linux.
