@@ -33,7 +33,7 @@ msgbody = ''
 #Function to enroll or unenroll a student
 def enrollstudent():
     global msgbody
-    if configs['Debug'] == "True"
+    if configs['Debug'] == "True":
         print('Enrolling ' + newenrolls['Person.Email'][i])
     logging.info('Found user - doing enrollments')
     coursetoenroll = newenrolls['ScheduledEvent.EventCd'][i]
@@ -129,14 +129,14 @@ elif r.status_code == 200:
             except CanvasException as e:
             #It all starts with figuring out if the user is in Canvas and enroll in tutorial course
                 if str(e) == "Not Found":
-                    if configs['Debug'] == "True"
+                    if configs['Debug'] == "True":
                         print('Creating ' + newenrolls['Person.Email'][i])
                     logging.info('User not found, creating')
                     newusername = newenrolls['Person.FirstName'][i] + " " + newenrolls['Person.LastName'][i]
                     sis_user_id = newenrolls['CustomerID'][i]
                     sortname = newenrolls['Person.LastName'][i] + ", " + newenrolls['Person.FirstName'][i]
                     emailaddr = newenrolls['Person.Email'][i]
-                    if configs['Debug'] == "True"
+                    if configs['Debug'] == "True":
                         print(newusername + " " + str(sis_user_id) + " " + emailaddr)
                     user = account.create_user(
                         user={
@@ -171,7 +171,7 @@ elif r.status_code == 200:
 logging.info('Writing last record to file')
 lastrec = newenrolls.tail(1)
 lastrec.to_csv(lastrunplacefilename)
-if configs['Debug'] == "True"
+if configs['Debug'] == "True":
     print("All done!")
     print("Starting record for next time is:")
     print(lastrec)
