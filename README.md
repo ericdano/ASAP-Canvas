@@ -23,8 +23,10 @@ You also need some sort of SMTP server to receive status messages from it (email
 This python script should run on any computer. You probably want to set it up to run hourly? Daily? Your pick. This script was developed on Windows and Linux.
 
 You will also need to make a .ASAPCanvas directory and put ASAPCanvas.json in there. This is where the program looks for your API keys, etc, etc. 
-Of note: 
-<b>NewUserCourse</b> is a Canvas Introduction course we created for our students to give them a run down on what Canvas is and how to use it. Totally optional, and if you are not going to use it, then don't set it.
-<b>SkipCourses</b> are courses we are not enrolling users into Canvas for. We offer some English language placement tests, and we do not put a student in Canvas when they are just enrolled in those classes. You can add a infinite list of skipped classes.
+Of note:
+<UL>
+<li><b>NewUserCourse</b> is a Canvas Introduction course we created for our students to give them a run down on what Canvas is and how to use it. Totally optional, and if you are not going to use it, then don't set it.
+<li><b>SkipCourses</b> are courses we are not enrolling users into Canvas for. We offer some English language placement tests, and we do not put a student in Canvas when they are just enrolled in those classes. You can add a infinite list of skipped classes.
+</ul>
 
 Also in the .ASAPCanvas directory, you need to create a lastrecordasap.csv file. This is a file that contains where you left off in the ASAP datastream. If you are running this for the FIRST TIME, I suggest running ASAP_Enrollments_to_CSV.py (run it and give it a filename you want to save to), and changing the classStartDate to whatever suits you. We are keying off and incremential serial number (I think?) field called EnrollmentStatusCd. You need to make a lastrecordasap.csv file that has atleast two lines in it, first one being the header of EnrollmentStatusCd, and the second a number where you want to start. It could be 0 if you want. I believe calling the ASAP API just gives you up to 60 days worth of information. Version .02 of the program will be a little smarter and also include the date in there so we don't have to grab so much from ASAP.
