@@ -164,7 +164,7 @@ elif r.status_code == 200:
                     msgbody = msgbody + 'Enrolled ' + emailaddr + ' for ' + newusername + 'in Intro to Canvas class\n'
                     enrollstudent()
     # Send event email to interested admins on new enrolls or drops
-    s = smtplib.SMTP(SMTPServerAddress)
+    s = smtplib.SMTP(configs['SMTPServerAddress'])
     msg.set_content(msgbody)
     s.send_message(msg)
 #write to csv last row processed
