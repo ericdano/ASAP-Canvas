@@ -33,7 +33,8 @@ msgbody = ''
 #Function to enroll or unenroll a student
 def enrollstudent():
     global msgbody
-    print('Enrolling ' + newenrolls['Person.Email'][i])
+    if configs['Debug'] == "True"
+        print('Enrolling ' + newenrolls['Person.Email'][i])
     logging.info('Found user - doing enrollments')
     coursetoenroll = newenrolls['ScheduledEvent.EventCd'][i]
     course = canvas.get_course(coursetoenroll,'sis_course_id')
@@ -41,7 +42,6 @@ def enrollstudent():
         enrollments = course.get_enrollments(type='StudentEnrollment')
         for stu in enrollments:
             if stu.user_id == user.id:
-                logging.info('Deleting enrollment')
                 stu.deactivate(task='delete')
                 logging.info('Deleted student from ' + newenrolls['ScheduledEvent.Course.CourseName'][i])
                 msgbody = msgbody + 'Dropped ' + newenrolls['Person.Email'][i] + ' from ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + '\n'
@@ -53,8 +53,8 @@ def enrollstudent():
                                             "enrollment_state": "active"
                                             }
                                         )
-    logging.info('Enrolled ' + newenrolls['Person.Email'][i] + ' in ' + newenrolls['ScheduledEvent.Course.CourseName'][i])
-    msgbody = msgbody + 'Enrolled ' + newenrolls['Person.Email'][i] + ' in ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + '\n'
+        logging.info('Enrolled ' + newenrolls['Person.Email'][i] + ' in ' + newenrolls['ScheduledEvent.Course.CourseName'][i])
+        msgbody = msgbody + 'Enrolled ' + newenrolls['Person.Email'][i] + ' in ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + '\n'
 #-----ASAP Info
 userid = configs['ASAPuserid']
 orgid = configs['ASAPorgid']
@@ -129,13 +129,15 @@ elif r.status_code == 200:
             except CanvasException as e:
             #It all starts with figuring out if the user is in Canvas and enroll in tutorial course
                 if str(e) == "Not Found":
-                    # print('Creating ' + newenrolls['Person.Email'][i])
+                    if configs['Debug'] == "True"
+                        print('Creating ' + newenrolls['Person.Email'][i])
                     logging.info('User not found, creating')
                     newusername = newenrolls['Person.FirstName'][i] + " " + newenrolls['Person.LastName'][i]
                     sis_user_id = newenrolls['CustomerID'][i]
                     sortname = newenrolls['Person.LastName'][i] + ", " + newenrolls['Person.FirstName'][i]
                     emailaddr = newenrolls['Person.Email'][i]
-                    # print(newusername + " " + str(sis_user_id) + " " + emailaddr)
+                    if configs['Debug'] == "True"
+                        print(newusername + " " + str(sis_user_id) + " " + emailaddr)
                     user = account.create_user(
                         user={
                             'name': newusername,
@@ -169,3 +171,7 @@ elif r.status_code == 200:
 logging.info('Writing last record to file')
 lastrec = newenrolls.tail(1)
 lastrec.to_csv(lastrunplacefilename)
+if configs['Debug'] == "True"
+    print("All done!")
+    print("Starting record for next time is:")
+    print(lastrec)
