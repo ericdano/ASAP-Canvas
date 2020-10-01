@@ -1,5 +1,5 @@
 import pandas as pd
-import requests, json, logging, smtplib
+import requests, json, logging, smtplib, datetime
 from canvasapi import Canvas
 from canvasapi.exceptions import CanvasException
 from pathlib import Path
@@ -164,6 +164,7 @@ elif r.status_code == 200:
                     msgbody = msgbody + 'Enrolled ' + emailaddr + ' for ' + newusername + 'in Intro to Canvas class\n'
                     enrollstudent()
     # Send event email to interested admins on new enrolls or drops
+    msg['Subject'] = msg['Subject'] + " " + datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")
     s = smtplib.SMTP(configs['SMTPServerAddress'])
     msg.set_content(msgbody)
     s.send_message(msg)
