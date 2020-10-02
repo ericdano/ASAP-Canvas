@@ -15,12 +15,13 @@ ASAP-Canvas uses Python 3.8.5, <a href="https://pandas.pydata.org/">Pandas for P
 You will also need an API key generated from your Canvas instance, and an API key from ASAP Connected.
 
 <h2>Installation and First Run</h2>
+<p>You FIRST need to make sure you already have all the courses you are going to be pulling from ASAP Connected ALREADY setup in Canvas. SIS ID for each class must match the course codes you use in ASAP. In the case of Acalanes Adult Education, we are using the ScheduledEvent.Eventcd field. The course code MUST match exactly in Canvas. So if the course is 022323, you need to have it be 022323 in Canvas. You cannot drop the leading zero. It is a string field, not a numeric field. If you are NOT conducting a course in Canvas, say a ESL or ELL test class that people are taking, then you need to add this course code to the "SkipCourses" array in the ASAPCanvas.json file.</p> 
 You need <a href="https://www.python.org/downloads/">Python 3.8.5</a>
 You need <a href="https://www.pypa.io/en/latest/">PIP installed</a>
 You need the <a href="https://github.com/ucfopen/canvasapi">CanvasAPI library</a>. With Python installed, you can run "pip install canvasapi"
 You need <a href="https://pandas.pydata.org/">Pandas for Python</A> installed.
 You also need some sort of SMTP server to receive status messages from it (emails saying it added X number of students, etc, etc)
-This python script should run on any computer. You probably want to set it up to run hourly? Daily? Your pick. This script was developed on Windows and Linux.
+This python script should run on any computer. You probably want to set it up to run hourly? Daily? Your pick. This script is device agnostic and should work on Windows, Linux or macOS (developed and deployed on a Windows machine).
 <br>
 <p>You will also need to make a .ASAPCanvas directory in your home directory and copy ASAPCanvas.json to there. This is where the program looks for your API keys, etc, etc. You also need to create a lastrecordasap.csv file. This is a file that contains where you left off in the ASAP datastream. If you are running this for the FIRST TIME, I suggest running ASAP_Enrollments_to_CSV.py (run it and give it a filename you want to save to), and changing the classStartDate to whatever suits you. We are keying off and incremential serial number (I think?) field called EnrollmentStatusCd. You need to make a lastrecordasap.csv file that has atleast two lines in it, first one being the header of EnrollmentStatusCd, and the second a number where you want to start. It could be 0 if you want. I believe calling the ASAP API just gives you up to 60 days worth of information. Version .02 of the program will be a little smarter and also include the date in there so we don't have to grab so much from ASAP.</p>
 Of note:
