@@ -3,7 +3,7 @@
 
 ASAP Connected and Canvas LMS Scripts - Python Scripts for pulling and pushing data to both Systems and various Canvas Scripts
 
-This project was started for <a href="https://acalanes.k12.ca.us/">Acalanes Union High School District Adult Education</a>. In the summer of 2020, during COVID-19, the school district switched Learning Management Systems (LMS) to <a href="https://www.instructure.com/">Instructure Canvas</a>. The issue was that the state of California requires Adult Education to use <a href="https://app.asapconnected.com/">ASAP Connected</a> for it's enrollment and attendance for programs and Canvas and ASAP do not talk to each other.
+This project was started for <a href="https://www.acalanes.k12.ca.us/Domain/150">Acalanes Union High School District Adult Education</a>. In the summer of 2020, during COVID-19, the school district switched Learning Management Systems (LMS) to <a href="https://www.instructure.com/">Instructure Canvas</a>. The issue was that the state of California requires Adult Education to use <a href="https://app.asapconnected.com/">ASAP Connected</a> for it's enrollment and attendance for programs and Canvas and ASAP do not talk to each other.
 
 After a roll out of about 1500 students using CSV files, I decided to dig in and figure out how to make it automated (cause, of course, I am lazy and don't want to keep pulling over things with CSV files).
 
