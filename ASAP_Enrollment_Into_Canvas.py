@@ -149,17 +149,18 @@ elif r.status_code == 200:
                         }
                     )
                     msgbody = msgbody + 'Added new account ' + emailaddr + ' for ' + newusername + '\n'
-                    logging.info('Enrolling new user into intro Canvas course')
-                    coursetoenroll = configs['NewUserCourse']
-                    course = canvas.get_course(coursetoenroll,'sis_course_id')
-                    enrollment = course.enroll_user(user,"StudentEnrollment",
-                                                    enrollment = {
-                                                        "sis_course_id": coursetoenroll,
-                                                        "notify": True,
-                                                        "enrollment_state": "active"
-                                                        }
-                                                    )
-                    msgbody = msgbody + 'Enrolled ' + emailaddr + ' for ' + newusername + 'in Intro to Canvas class\n'
+                    if configs['NewUserCourse'] != '':
+                        logging.info('Enrolling new user into intro Canvas course')
+                        coursetoenroll = configs['NewUserCourse']
+                        course = canvas.get_course(coursetoenroll,'sis_course_id')
+                        enrollment = course.enroll_user(user,"StudentEnrollment",
+                                                        enrollment = {
+                                                            "sis_course_id": coursetoenroll,
+                                                            "notify": True,
+                                                            "enrollment_state": "active"
+                                                            }
+                                                        )
+                        msgbody = msgbody + 'Enrolled ' + emailaddr + ' for ' + newusername + 'in Intro to Canvas class\n'
                     enrollstudent()
     # Send event email to interested admins on new enrolls or drops
     s = smtplib.SMTP(configs['SMTPServerAddress'])
@@ -170,6 +171,7 @@ elif r.status_code == 200:
         logging.info('Writing last record to file')
         lastrec = newenrolls.tail(1)
         lastrec.to_csv(lastrunplacefilename)
+        msgbody = msgbody + '\n\n\nHappy Mickey\n'
     msg.set_content(msgbody)
     s.send_message(msg)
 if configs['Debug'] == "True":
