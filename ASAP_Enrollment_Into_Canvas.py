@@ -165,7 +165,7 @@ elif r.status_code == 200:
     s = smtplib.SMTP(configs['SMTPServerAddress'])
     if msgbody == '':
         msgbody = 'No new enrollments or drops for this iteration of ASAP-Canvas script\n\n\nSad Mickey\n'
-        lastrunplace.to_csvv(lastrunplace)
+        lastrunplace.to_csv(lastrunplacefilename)
     else:
         logging.info('Writing last record to file')
         lastrec = newenrolls.tail(1)
@@ -174,5 +174,3 @@ elif r.status_code == 200:
     s.send_message(msg)
 if configs['Debug'] == "True":
     print("All done!")
-    print("Starting record for next time is:")
-    print(lastrec)
