@@ -3,7 +3,7 @@
 
 ASAP Connected and Canvas LMS Scripts - Python Scripts for pulling and pushing data to both Systems and various Canvas Scripts
 
-This project was started for the <a href="https://acalanes.k12.ca.u/">Acalanes Union High School District Adult Education</a>. In the summer of 2020, during COVID-19, the school district switched Learning Management Systems (LMS) to <a href="https://www.instructure.com/">Instructure Canvas</a>. The issue was that the state of California requires Adult Education to use <a href="https://app.asapconnected.com/">ASAP Connected</a> for it's enrollment and attendance for programs and Canvas and ASAP do not talk to each other.
+This project was started for <a href="https://www.acalanes.k12.ca.us/Domain/150">Acalanes Union High School District Adult Education</a>. In the summer of 2020, during COVID-19, the school district switched Learning Management Systems (LMS) to <a href="https://www.instructure.com/">Instructure Canvas</a>. The issue was that the state of California requires Adult Education to use <a href="https://app.asapconnected.com/">ASAP Connected</a> for it's enrollment and attendance for programs and Canvas and ASAP do not talk to each other.
 
 After a roll out of about 1500 students using CSV files, I decided to dig in and figure out how to make it automated (cause, of course, I am lazy and don't want to keep pulling over things with CSV files).
 
@@ -15,7 +15,7 @@ ASAP-Canvas uses Python 3.8.5, <a href="https://pandas.pydata.org/">Pandas for P
 You will also need an API key generated from your Canvas instance, and an API key from ASAP Connected.
 
 <h2>Installation and First Run</h2>
-<p>You FIRST need to make sure you already have all the courses you are going to be pulling from ASAP Connected ALREADY setup in Canvas. SIS ID for each class must match the course codes you use in ASAP. In the case of Acalanes Adult Education, we are using the ScheduledEvent.Eventcd field. The course code MUST match exactly in Canvas. So if the course is 022323, you need to have it be 022323 in Canvas. You cannot drop the leading zero. It is a string field, not a numeric field. If you are NOT conducting a course in Canvas, say a ESL or ELL test class that people are taking, then you need to add this course code to the "SkipCourses" array in the ASAPCanvas.json file.</p> 
+<p>You FIRST need to make sure you already have all the courses you are going to be pulling from ASAP Connected ALREADY setup in Canvas. This program does not create courses in Canvas. SIS ID for each class must match the course codes you use in ASAP. In the case of Acalanes Adult Education, we are using the ScheduledEvent.Eventcd field. The course code MUST match exactly in Canvas. So if the course is 022323, you need to have it be 022323 in Canvas. You cannot drop the leading zero. It is a string field, not a numeric field. If you are NOT conducting a course in Canvas, say a ESL or ELL test class that people are taking, then you need to add this course code to the "SkipCourses" array in the ASAPCanvas.json file.</p> 
 You need <a href="https://www.python.org/downloads/">Python 3.8.5</a>
 You need <a href="https://www.pypa.io/en/latest/">PIP installed</a>
 You need the <a href="https://github.com/ucfopen/canvasapi">CanvasAPI library</a>. With Python installed, you can run "pip install canvasapi"
