@@ -142,7 +142,7 @@ elif r.status_code == 200:
                             'sortable_name': sortname
                         },
                         pseudonym={
-                            'unique_id': emailaddr,
+                            'unique_id': emailaddr.lower(),
                             'force_self_registration': True,
                             'sis_user_id': sis_user_id
                         }
