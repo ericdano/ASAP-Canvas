@@ -8,7 +8,6 @@ from email.message import EmailMessage
 # This program grabs data from ASAP connected's API, dones so light processing,
 # and creates new users in Canvas, adds new users to a tutorial class in Canvas,
 # and then enrolls them into their class
-#
 # It also remembers where it left off in ASAP
 #
 #load configs
@@ -66,6 +65,8 @@ logging.info('Getting ASAP Key')
 r = requests.get(url,headers = headers)
 if r.status_code == 404:
     logging.info('Failed to get ASAP Key')
+    if configs['Debug'] == "True":
+        print('Failed to connect to ASAP')
 elif r.status_code == 200:
     logging.info('Got ASAP Key')
     accesstoken = r.json()
@@ -98,7 +99,6 @@ elif r.status_code == 200:
                                         'ScheduledEvent.EventTypeCd','ScheduledEvent.JobClassCd','ScheduledEvent.OrganizationID','CustomerNo','DLNum',
                                         'OrganizationID','Person.Relationship','Person.Gender','LastModifiedDate','ScheduledEvent.IsShowOnline',
                                         'ScheduledEvent.SiteID','ConfirmationCd','ScheduledEvent.Course.CreatedDate','ScheduledEvent.Course.IsOnline'])
-
     # For Canvas, we only care about a few columns that ASAP gives us (hence the mass dropping of columns above)
     # EventEnrollmentID is basically a sequence number. This is what we are going to use to find out where we are in the transcation stream
     # EnrollmentStatusCd tells us what to do. ENROLLED and PEND mean put them in a class, DROPPED means remove them
@@ -120,10 +120,7 @@ elif r.status_code == 200:
     for i in newenrolls.index:
         #Look for classes we don't do canvas for, and skip
         if not newenrolls['ScheduledEvent.EventCd'][i] in configs['SkipCourses']:
-            print('Found some classes, going on')
-            print(newenrolls['ScheduledEvent.EventCd'][i])
             try:
-                # print('Trying ' + newenrolls['Person.Email'][i])
                 user = canvas.get_user(newenrolls['Person.Email'][i],'sis_login_id')
                 enrollstudent()
             except CanvasException as e:
@@ -166,6 +163,8 @@ elif r.status_code == 200:
     # Send event email to interested admins on new enrolls or drops
     msg['Subject'] = msg['Subject'] + " " + datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")
     s = smtplib.SMTP(configs['SMTPServerAddress'])
+    if msgbody == '':
+        msgbody = 'No new enrollments or drops for this iteration of ASAP-Canvas script\n\n\nSad Mickey\n'
     msg.set_content(msgbody)
     s.send_message(msg)
 #write to csv last row processed
