@@ -163,7 +163,7 @@ elif r.status_code == 200:
     # Send event email to interested admins on new enrolls or drops
     msg['Subject'] = msg['Subject'] + " " + str(datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y"))
     s = smtplib.SMTP(configs['SMTPServerAddress'])
-    if msgbody == '':
+    if msgbody == Null:
         msgbody = 'No new enrollments or drops for this iteration of ASAP-Canvas script\n\n\nSad Mickey\n'
     msg.set_content(msgbody)
     s.send_message(msg)
