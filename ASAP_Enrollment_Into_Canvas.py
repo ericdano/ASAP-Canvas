@@ -25,7 +25,8 @@ Canvas_API_URL = configs['CanvasAPIURL']
 Canvas_API_KEY = configs['CanvasAPIKey']
 #prep status
 msg = EmailMessage()
-msg['Subject'] = configs['SMTPStatusMessage']
+msg['Subject'] = str(configs['SMTPStatusMessage'] + " " + datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y"))
+#msg['Subject'] = configs['SMTPStatusMessage']
 msg['From'] = configs['SMTPAddressFrom']
 msg['To'] = configs['SendInfoEmailAddr']
 msgbody = ''
@@ -161,7 +162,6 @@ elif r.status_code == 200:
                     msgbody = msgbody + 'Enrolled ' + emailaddr + ' for ' + newusername + 'in Intro to Canvas class\n'
                     enrollstudent()
     # Send event email to interested admins on new enrolls or drops
-    msg['Subject'] = configs['SMTPStatusMessage'] + " " + datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")
     s = smtplib.SMTP(configs['SMTPServerAddress'])
     if msgbody == Null:
         msgbody = 'No new enrollments or drops for this iteration of ASAP-Canvas script\n\n\nSad Mickey\n'
