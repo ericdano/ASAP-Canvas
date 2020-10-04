@@ -25,16 +25,21 @@ Canvas_API_URL = configs['CanvasAPIURL']
 Canvas_API_KEY = configs['CanvasAPIKey']
 #prep status
 msg = EmailMessage()
+dmsg = EmailMessage()
 msg['Subject'] = str(configs['SMTPStatusMessage'] + " " + datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y"))
-#msg['Subject'] = configs['SMTPStatusMessage']
+dmsg['Subject'] = str("Debug - " + configs['SMTPStatusMessage'] + " " + datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y"))
 msg['From'] = configs['SMTPAddressFrom']
+dmsg['From'] = configs['SMTPAddressFrom']
 msg['To'] = configs['SendInfoEmailAddr']
+dmsg['To'] = configs['DebugEmailAddr']
 msgbody = ''
+dmsgbody = ''
 #Function to enroll or unenroll a student
 def enrollstudent():
-    global msgbody
+    global msgbody, dmsgbody
     if configs['Debug'] == "True":
         print('Enrolling ' + newenrolls['Person.Email'][i])
+        dmsgbody = dmsgbody + 'Enrolling ' + newenrolls['Person.Email'][i] +'\n'
     logging.info('Found user - doing enrollments')
     coursetoenroll = newenrolls['ScheduledEvent.EventCd'][i]
     course = canvas.get_course(coursetoenroll,'sis_course_id')
@@ -68,6 +73,8 @@ if r.status_code == 404:
     logging.info('Failed to get ASAP Key')
     if configs['Debug'] == "True":
         print('Failed to connect to ASAP')
+        logging.info('Failed to get ASAP Key')
+        dmsgbody = dmsgbody + 'Failed to get ASAP Key....\n'
 elif r.status_code == 200:
     logging.info('Got ASAP Key')
     accesstoken = r.json()
@@ -75,6 +82,8 @@ elif r.status_code == 200:
     url2 = configs['ASAPapiurl']
     header = {'asap_accesstoken' : accesstoken}
     logging.info('Getting data from ASAP')
+    if configs['Debug'] == "True":
+        dmsgbody = dmsgbody + 'Getting JSON from ASAP....\n'
     r2 = requests.get(url2,headers = header)
     results = pd.concat([pd.json_normalize(r2.json()), pd.json_normalize(r2.json(),record_path="Students", max_level=2)], axis=1).drop('Students',1)
     #Drop columns we don't need
@@ -109,26 +118,36 @@ elif r.status_code == 200:
     # Person.LastName is their LastName
     # Load last record processed
     logging.info('Connecting to Canvas')
+    if configs['Debug'] == "True":
+        dmsgbody = dmsgbody + 'Connecting to Canvas....\n'
     canvas = Canvas(Canvas_API_URL, Canvas_API_KEY)
     account = canvas.get_account(1)
     logging.info('Getting last record we looked at')
+    if configs['Debug'] == "True":
+        dmsgbody = dmsgbody + 'Loading last record processed....\n'
     #load starting record position
     lastrunplace = pd.read_csv(lastrunplacefilename)
     #print(lastrunplace['EventEnrollmentID'])
     logging.info('Last place was ' + str(lastrunplace))
     newenrolls = results[results['EventEnrollmentID'] > lastrunplace['EventEnrollmentID'][0]]
     logging.info("Looking for enrollments")
+    if configs['Debug'] == "True":
+        dmsgbody = dmsgbody + "Looking for enrollments....\n"
     for i in newenrolls.index:
         #Look for classes we don't do canvas for, and skip
         if not newenrolls['ScheduledEvent.EventCd'][i] in configs['SkipCourses']:
             try:
                 user = canvas.get_user(newenrolls['Person.Email'][i],'sis_login_id')
+                logging.info(newenrolls['Person.Email'][i] + " is in Canvas")
+                if configs['Debug'] == "True":
+                    dmsgbody = dmsgbody + newenrolls['Person.Email'][i] + ' is in Canvas\n'
                 enrollstudent()
             except CanvasException as e:
             #It all starts with figuring out if the user is in Canvas and enroll in tutorial course
                 if str(e) == "Not Found":
                     if configs['Debug'] == "True":
                         print('Creating ' + newenrolls['Person.Email'][i])
+                        dmsgbody = dmsgbody + 'Creating ' + newenrolls['Person.Email'][i] + ' in Canvas\n'
                     logging.info('User not found, creating')
                     newusername = newenrolls['Person.FirstName'][i] + " " + newenrolls['Person.LastName'][i]
                     sis_user_id = newenrolls['CustomerID'][i]
@@ -150,7 +169,9 @@ elif r.status_code == 200:
                     )
                     msgbody = msgbody + 'Added new account ' + emailaddr + ' for ' + newusername + '\n'
                     if configs['NewUserCourse'] != '':
-                        logging.info('Enrolling new user into intro Canvas course')
+                        logging.info('Enrolling new user into intro student Canvas course')
+                        if configs['Debug'] == "True":
+                            dmsgbody = dmsgbody + 'Enrolling ' + newenrolls['Person.Email'][i] + ' into intro student Canvas course\n'
                         coursetoenroll = configs['NewUserCourse']
                         course = canvas.get_course(coursetoenroll,'sis_course_id')
                         enrollment = course.enroll_user(user,"StudentEnrollment",
@@ -160,19 +181,24 @@ elif r.status_code == 200:
                                                             "enrollment_state": "active"
                                                             }
                                                         )
-                        msgbody = msgbody + 'Enrolled ' + emailaddr + ' for ' + newusername + 'in Intro to Canvas class\n'
+                        msgbody = msgbody + 'Enrolled ' + emailaddr + ' for ' + newusername + 'in Intro to Canvas course\n'
+                        dmsgbody = dmsgbody + 'Enrolled ' + emailaddr + ' for ' + newusername + 'in Intro to Canvas course\n'
                     enrollstudent()
     # Send event email to interested admins on new enrolls or drops
     s = smtplib.SMTP(configs['SMTPServerAddress'])
     if msgbody == '':
         msgbody = 'No new enrollments or drops for this iteration of ASAP-Canvas script\n\n\nSad Mickey\n'
         lastrunplace.to_csv(lastrunplacefilename)
+        dmsgbody = dmsgbody + 'Wrote previous last record back to file'
     else:
         logging.info('Writing last record to file')
         lastrec = newenrolls.tail(1)
         lastrec.to_csv(lastrunplacefilename)
         msgbody = msgbody + '\n\n\nHappy Mickey\n'
+        dmsgbody = dmsgbody + 'wrote NEW last record to file'
     msg.set_content(msgbody)
     s.send_message(msg)
 if configs['Debug'] == "True":
     print("All done!")
+    dmsg.set_content(dmsgbody)
+    s.send_message(dmsg)
