@@ -23,7 +23,7 @@ logging.info('Loaded config file and logfile started')
 #-----Canvas Info
 Canvas_API_URL = configs['CanvasAPIURL']
 Canvas_API_KEY = configs['CanvasAPIKey']
-#prep status
+#prep status (msg) and debug (dmsg) emails
 msg = EmailMessage()
 dmsg = EmailMessage()
 msg['Subject'] = str(configs['SMTPStatusMessage'] + " " + datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y"))
@@ -44,12 +44,16 @@ def enrollstudent():
     coursetoenroll = newenrolls['ScheduledEvent.EventCd'][i]
     course = canvas.get_course(coursetoenroll,'sis_course_id')
     if newenrolls['ScheduledEvent.EventCd'][i] == "DROPPED":
+        if configs['Debug'] == "True":
+            dmsgbody = dmsgbody + 'Dropping ' + newenrolls['Person.Email'][i] +'\n'
         enrollments = course.get_enrollments(type='StudentEnrollment')
         for stu in enrollments:
             if stu.user_id == user.id:
                 stu.deactivate(task='delete')
                 logging.info('Deleted student from ' + newenrolls['ScheduledEvent.Course.CourseName'][i])
                 msgbody = msgbody + 'Dropped ' + newenrolls['Person.Email'][i] + ' from ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + '\n'
+                if configs['Debug'] == "True":
+                    dmsgbody = dmsgbody + 'Dropped ' + newenrolls['Person.Email'][i] + ' from ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + '\n'
     else:
         enrollment = course.enroll_user(user,"StudentEnrollment",
                                         enrollment = {
@@ -60,6 +64,8 @@ def enrollstudent():
                                         )
         logging.info('Enrolled ' + newenrolls['Person.Email'][i] + ' in ' + newenrolls['ScheduledEvent.Course.CourseName'][i])
         msgbody = msgbody + 'Enrolled ' + newenrolls['Person.Email'][i] + ' in ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + '\n'
+        if configs['Debug'] == "True":
+            dmsgbody = dmsgbody + 'Enrolled ' + newenrolls['Person.Email'][i] + ' in ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + '\n'
 #-----ASAP Info
 userid = configs['ASAPuserid']
 orgid = configs['ASAPorgid']
@@ -77,6 +83,8 @@ if r.status_code == 404:
         dmsgbody = dmsgbody + 'Failed to get ASAP Key....\n'
 elif r.status_code == 200:
     logging.info('Got ASAP Key')
+    if configs['Debug'] == "True":
+        dmsgbody = dmsgbody + 'Got ASAP Key....\n'
     accesstoken = r.json()
     logging.info('Key is ' + accesstoken)
     url2 = configs['ASAPapiurl']
