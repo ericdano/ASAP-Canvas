@@ -11,7 +11,7 @@ Using Python, API calls, <a href="https://pandas.pydata.org/">Pandas for Python<
 
 <h2>Requirements</h2>
 
-ASAP-Canvas uses Python 3.8.5, <a href="https://pandas.pydata.org/">Pandas for Python</a>, and <a href="https://github.com/ucfopen/canvasapi">CanvasAPI</a>
+ASAP-Canvas uses Python 3.8.5, <a href="https://pandas.pydata.org/">Pandas for Python</a>, <a href="https://github.com/ucfopen/canvasapi">CanvasAPI</a>, and a few other Python libraries like requests (pip install requests
 You will also need an API key generated from your Canvas instance, and an API key from ASAP Connected.
 
 <h2>Installation and First Run</h2>
