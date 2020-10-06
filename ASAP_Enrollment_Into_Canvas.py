@@ -55,6 +55,7 @@ def enrollstudent():
                 if configs['Debug'] == "True":
                     dmsgbody = dmsgbody + 'Dropped ' + newenrolls['Person.Email'][i] + ' from ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + '\n'
     else:
+        # Other ASAP things could be PEND or ENROLLED.
         enrollment = course.enroll_user(user,"StudentEnrollment",
                                         enrollment = {
                                             "sis_course_id": coursetoenroll,
