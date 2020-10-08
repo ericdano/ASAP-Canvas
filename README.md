@@ -29,3 +29,5 @@ Of note:
 <li><b>NewUserCourse</b> is a Canvas Introduction course we created for our students to give them a run down on what Canvas is and how to use it. Totally optional, and if you are not going to use it, then don't set it.
 <li><b>SkipCourses</b> are courses we are not enrolling users into Canvas for. We offer some English language placement tests, and we do not put a student in Canvas when they are just enrolled in those classes. You can add a infinite list of skipped classes.
 </ul>
+<h2>Support</h2>
+Need a feature? Something not working? <a href=mailto:edannewitz@auhsdschools.org>Drop me a line.</a>
