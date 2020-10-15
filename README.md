@@ -30,4 +30,5 @@ Of note:
 <li><b>SkipCourses</b> are courses we are not enrolling users into Canvas for. We offer some English language placement tests, and we do not put a student in Canvas when they are just enrolled in those classes. You can add a infinite list of skipped classes.
 </ul>
 <h2>Support</h2>
+<a href="https://drive.google.com/file/d/1-zm5MQK1nnfP65ZB_3_jmzaBJFkxkhV3/view?usp=sharing">Introduction video on how it works</a>.
 Need a feature? Something not working? <a href=mailto:edannewitz@auhsdschools.org>Drop me a line.</a>
