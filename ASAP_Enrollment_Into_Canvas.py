@@ -38,8 +38,8 @@ dmsgbody = ''
 def enrollstudent():
     global msgbody, dmsgbody
     if configs['Debug'] == "True":
-        print('Enrolling ' + newenrolls['Person.Email'][i])
-        dmsgbody = dmsgbody + 'Enrolling ' + newenrolls['Person.Email'][i] +'\n'
+        print('Enrolling ' + newenrolls['Person.Email'][i]) + ' into ID ' +  newenrolls['ScheduledEvent.EventCd'][i]
+        dmsgbody = dmsgbody + 'Enrolling ' + newenrolls['Person.Email'][i] + ' into ID ' +  newenrolls['ScheduledEvent.EventCd'][i] + '\n'
     logging.info('Found user - doing enrollments')
     coursetoenroll = newenrolls['ScheduledEvent.EventCd'][i]
     course = canvas.get_course(coursetoenroll,'sis_course_id')
