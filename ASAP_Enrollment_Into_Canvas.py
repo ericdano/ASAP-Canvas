@@ -38,35 +38,47 @@ dmsgbody = ''
 def enrollstudent():
     global msgbody, dmsgbody
     if configs['Debug'] == "True":
-        print('Enrolling ' + newenrolls['Person.Email'][i]) + ' into ID ' +  newenrolls['ScheduledEvent.EventCd'][i]
+        print('Enrolling ' + newenrolls['Person.Email'][i]) + ' into ID ' +  newenrolls['ScheduledEvent.EventCd'][i])
         dmsgbody = dmsgbody + 'Enrolling ' + newenrolls['Person.Email'][i] + ' into ID ' +  newenrolls['ScheduledEvent.EventCd'][i] + '\n'
     logging.info('Found user - doing enrollments')
     coursetoenroll = newenrolls['ScheduledEvent.EventCd'][i]
-    course = canvas.get_course(coursetoenroll,'sis_course_id')
-    if newenrolls['ScheduledEvent.EventCd'][i] == "DROPPED":
-        if configs['Debug'] == "True":
-            dmsgbody = dmsgbody + 'Dropping ' + newenrolls['Person.Email'][i] +'\n'
-        enrollments = course.get_enrollments(type='StudentEnrollment')
-        for stu in enrollments:
-            if stu.user_id == user.id:
-                stu.deactivate(task='delete')
-                logging.info('Deleted student from ' + newenrolls['ScheduledEvent.Course.CourseName'][i])
-                msgbody = msgbody + 'Dropped ' + newenrolls['Person.Email'][i] + ' from ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + '\n'
-                if configs['Debug'] == "True":
-                    dmsgbody = dmsgbody + 'Dropped ' + newenrolls['Person.Email'][i] + ' from ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + '\n'
-    else:
-        # Other ASAP things could be PEND or ENROLLED.
-        enrollment = course.enroll_user(user,"StudentEnrollment",
-                                        enrollment = {
-                                            "sis_course_id": coursetoenroll,
-                                            "notify": True,
-                                            "enrollment_state": "active"
-                                            }
-                                        )
-        logging.info('Enrolled ' + newenrolls['Person.Email'][i] + ' in ' + newenrolls['ScheduledEvent.Course.CourseName'][i])
-        msgbody = msgbody + 'Enrolled ' + newenrolls['Person.Email'][i] + ' in ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + '\n'
-        if configs['Debug'] == "True":
-            dmsgbody = dmsgbody + 'Enrolled ' + newenrolls['Person.Email'][i] + ' in ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + '\n'
+    try:
+        course = canvas.get_course(coursetoenroll,'sis_course_id')
+        if newenrolls['ScheduledEvent.EventCd'][i] == "DROPPED":
+            if configs['Debug'] == "True":
+                dmsgbody = dmsgbody + 'Dropping ' + newenrolls['Person.Email'][i] +'\n'
+            enrollments = course.get_enrollments(type='StudentEnrollment')
+            for stu in enrollments:
+                if stu.user_id == user.id:
+                    stu.deactivate(task='delete')
+                    logging.info('Deleted student from ' + newenrolls['ScheduledEvent.Course.CourseName'][i])
+                    msgbody = msgbody + 'Dropped ' + newenrolls['Person.Email'][i] + ' from ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + '\n'
+                    if configs['Debug'] == "True":
+                        dmsgbody = dmsgbody + 'Dropped ' + newenrolls['Person.Email'][i] + ' from ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + '\n'
+        else:
+            # Other ASAP things could be PEND or ENROLLED.
+            enrollment = course.enroll_user(user,"StudentEnrollment",
+                                            enrollment = {
+                                                "sis_course_id": coursetoenroll,
+                                                "notify": True,
+                                                "enrollment_state": "active"
+                                                }
+                                            )
+            logging.info('Enrolled ' + newenrolls['Person.Email'][i] + ' in ' + newenrolls['ScheduledEvent.Course.CourseName'][i])
+            msgbody = msgbody + 'Enrolled ' + newenrolls['Person.Email'][i] + ' in ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + '\n'
+            if configs['Debug'] == "True":
+                dmsgbody = dmsgbody + 'Enrolled ' + newenrolls['Person.Email'][i] + ' in ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + '\n'
+    except CanvasException as ec:
+                #It all starts with figuring out if the user is in Canvas and enroll in tutorial course
+        if str(ec) == "Not Found":
+            logging.info('Course code ' + newenrolls['ScheduledEvent.EventCd'][i] +' is not in Canvas. Stopping imports. ')
+            print('Course code ' + newenrolls['ScheduledEvent.EventCd'][i] +' is not in Canvas. Stopping imports.')
+            s = smtplib.SMTP(configs['SMTPServerAddress'])
+            msgbody = msgbody + 'Course code ' + newenrolls['ScheduledEvent.EventCd'][i] +' is not in Canvas. Stopping imports.\n\n\nPanic!!!\n'
+            dmsgbody = dmsgbody + 'Course code ' + newenrolls['ScheduledEvent.EventCd'][i] +' is not in Canvas. Stopping imports.\n\n\nPanic!!!\n'
+            msg.set_content(msgbody)
+            s.send_message(msg)
+            raise
 #-----ASAP Info
 userid = configs['ASAPuserid']
 orgid = configs['ASAPorgid']
