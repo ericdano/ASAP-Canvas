@@ -41,7 +41,7 @@ dmsgbody = ''
 def enrollstudent():
     global msgbody, dmsgbody
     if configs['Debug'] == "True":
-        print('Enrolling ' + newenrolls['Person.Email'][i]) + ' into ID ' +  newenrolls['ScheduledEvent.EventCd'][i]
+        print('Enrolling ' + newenrolls['Person.Email'][i] + ' into ID ' +  newenrolls['ScheduledEvent.EventCd'][i])
         dmsgbody = dmsgbody + 'Enrolling ' + newenrolls['Person.Email'][i] + ' into ID ' +  newenrolls['ScheduledEvent.EventCd'][i] + '\n'
     logging.info('Found user - doing enrollments')
     coursetoenroll = newenrolls['ScheduledEvent.EventCd'][i]
