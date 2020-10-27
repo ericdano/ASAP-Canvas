@@ -73,15 +73,14 @@ def enrollstudent():
                 dmsgbody = dmsgbody + 'Enrolled ' + newenrolls['Person.Email'][i] + ' in ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + '\n'
     except CanvasException as ec:
                 #It all starts with figuring out if the user is in Canvas and enroll in tutorial course
-        if str(ec) == "Not Found":
-            logging.info('Course code ' + newenrolls['ScheduledEvent.EventCd'][i] +' is not in Canvas. Stopping imports. ')
-            print('Course code ' + newenrolls['ScheduledEvent.EventCd'][i] +' is not in Canvas. Stopping imports.')
-            s = smtplib.SMTP(configs['SMTPServerAddress'])
-            msgbody = msgbody + 'Course code ' + newenrolls['ScheduledEvent.EventCd'][i] +' is not in Canvas. Stopping imports.\n\n\nPanic!!!\n'
-            dmsgbody = dmsgbody + 'Course code ' + newenrolls['ScheduledEvent.EventCd'][i] +' is not in Canvas. Stopping imports.\n\n\nPanic!!!\n'
-            msg.set_content(msgbody)
-            s.send_message(msg)
-            raise
+        logging.info('Canvas error ' + str(ec) + ' Course code ' + newenrolls['ScheduledEvent.EventCd'][i] +' is not in Canvas. Stopping imports. ')
+        print('Canvas error ' + str(ec) + ' Course code ' + newenrolls['ScheduledEvent.EventCd'][i] +' is not in Canvas. Stopping imports.')
+        s = smtplib.SMTP(configs['SMTPServerAddress'])
+        msgbody = msgbody + 'Course code ' + newenrolls['ScheduledEvent.EventCd'][i] +' is not in Canvas. Stopping imports.\n\n\nPanic!!!\n'
+        dmsgbody = dmsgbody + 'Course code ' + newenrolls['ScheduledEvent.EventCd'][i] +' is not in Canvas. Stopping imports.\n\n\nPanic!!!\n'
+        msg.set_content(msgbody)
+        s.send_message(msg)
+        raise
 #-----ASAP Info
 userid = configs['ASAPuserid']
 orgid = configs['ASAPorgid']
