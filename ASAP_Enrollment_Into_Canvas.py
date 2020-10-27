@@ -4,7 +4,7 @@ from canvasapi import Canvas
 from canvasapi.exceptions import CanvasException
 from pathlib import Path
 from email.message import EmailMessage
-# ASAP Connected to Canvas importer version .05
+# ASAP Connected to Canvas importer version .06
 # This program grabs data from ASAP connected's API, dones so light processing,
 # and creates new users in Canvas, adds new users to a tutorial class in Canvas,
 # and then enrolls them into their class
