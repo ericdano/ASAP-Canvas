@@ -9,7 +9,6 @@ with open(confighome) as f:
 # Logging
 logfilename = Path.home() / ".ASAPCanvas" / configs['logfilename']
 logging.basicConfig(filename=str(logfilename), level=logging.INFO)
-#logging.basicConfig(filename=configs['logfilename'], level=logging.INFO)
 logging.info('Loaded config file and logfile started')
 csvfilename = sys.argv[1]
 #-----ASAP Info
