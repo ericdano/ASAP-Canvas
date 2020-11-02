@@ -4,8 +4,12 @@ from pathlib import Path
 
 #load configs
 confighome = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
-with open(confighome) as f:
-  configs = json.load(f)
+try:
+    with open(confighome) as f:
+        configs = json.load(f)
+except EnvironmentError:
+    print('Config file not found. Check to make sure there is a .ASAPCanvas folder in your home directory with a ASAPCanvas.json file in that folder.')
+    raise
 # Logging
 logfilename = Path.home() / ".ASAPCanvas" / configs['logfilename']
 logging.basicConfig(filename=str(logfilename), level=logging.INFO)
