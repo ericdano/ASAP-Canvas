@@ -4,7 +4,7 @@ from canvasapi import Canvas
 from canvasapi.exceptions import CanvasException
 from pathlib import Path
 from email.message import EmailMessage
-# ASAP Connected to Canvas importer version .06
+# ASAP Connected to Canvas importer version .07
 # This program grabs data from ASAP connected's API, dones so light processing,
 # and creates new users in Canvas, adds new users to a tutorial class in Canvas,
 # and then enrolls them into their class
@@ -12,7 +12,8 @@ from email.message import EmailMessage
 #
 # .05 Added some error checking for enrolling into a class that isn't in Canvas but in ASAP
 # This will generate an error, quit the program, and send an email out that it needs to be addressed
-#
+# .06 Added more error checking
+# .07 Added even more error checking and messaging (will now include in email if it skipped any classes in skip list)
 #load configs
 home = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
 confighome = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
@@ -207,17 +208,22 @@ elif r.status_code == 200:
                         msgbody = msgbody + 'Enrolled ' + emailaddr + ' for ' + newusername + 'in Intro to Canvas course\n'
                         dmsgbody = dmsgbody + 'Enrolled ' + emailaddr + ' for ' + newusername + 'in Intro to Canvas course\n'
                     enrollstudent()
+        else:
+            logging.info('Found course in Skip List. Course Code-> ' + newenrolls['ScheduledEvent.EventCd'][i])
+            if configs['Debug'] == "True":
+                dmsgbody = dmsgbody + 'Skipping enrollment for ' + newenrolls['Person.Email'][i] + ', found course code ' + newenrolls['ScheduledEvent.EventCd'][i] + ' in skip list.\n'
+            msgbody = msgbody + 'Skipping enrollment for ' + newenrolls['Person.Email'][i] + ', found course code ' + newenrolls['ScheduledEvent.EventCd'][i] + ' in skip list.\n'
     # Send event email to interested admins on new enrolls or drops
     s = smtplib.SMTP(configs['SMTPServerAddress'])
     if msgbody == '':
-        msgbody = 'No new enrollments or drops for this iteration of ASAP-Canvas script\n\n\nSad Mickey\n'
+        msgbody = 'No new enrollments or drops for this iteration of ASAP-Canvas script\n\nSad Mickey\n'
         lastrunplace.to_csv(lastrunplacefilename)
         dmsgbody = dmsgbody + 'Wrote previous last record back to file'
     else:
         logging.info('Writing last record to file')
         lastrec = newenrolls.tail(1)
         lastrec.to_csv(lastrunplacefilename)
-        msgbody = msgbody + '\n\n\nHappy Mickey\n'
+        msgbody = msgbody + '\n\nHappy Mickey\n'
         dmsgbody = dmsgbody + 'wrote NEW last record to file'
     msg.set_content(msgbody)
     s.send_message(msg)
