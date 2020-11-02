@@ -219,15 +219,22 @@ elif r.status_code == 200:
     if msgbody == '':
         if skippedbody == '':
             msgbody = 'No new enrollments or drops for this iteration of ASAP-Canvas script\n\nSad Mickey\n'
+            lastrunplace.to_csv(lastrunplacefilename)
+            dmsgbody = dmsgbody + 'Wrote previous last record back to file'
         else:
+            logging.info('Writing last record to file')
+            lastrec = newenrolls.tail(1)
+            lastrec.to_csv(lastrunplacefilename)
             msgbody = 'No new enrollments or drops for this iteration of ASAP-Canvas script\n\nSkipped enrolling these as course codes were in skip list:\n\n' + skippedbody + '\n\nSad Mickey\n'
-        lastrunplace.to_csv(lastrunplacefilename)
-        dmsgbody = dmsgbody + 'Wrote previous last record back to file'
     else:
         logging.info('Writing last record to file')
         lastrec = newenrolls.tail(1)
         lastrec.to_csv(lastrunplacefilename)
-        msgbody = msgbody + '\n\nHappy Mickey\n'
+        if skippedbody == '':
+            msgbody = msgbody + '\n\nHappy Mickey\n'
+        else:
+            msgbody = msgbody + '\n\nSkipped enrolling these as course codes were in skip list:\n\n' + skippedbody + '\n\nHappy Mickey\n'
+            dmsgbody = dmsgbody + '\n\nSkipped enrolling these as course codes were in skip list:\n\n' + skippedbody + '\n'
         dmsgbody = dmsgbody + 'wrote NEW last record to file'
     msg.set_content(msgbody)
     s.send_message(msg)
