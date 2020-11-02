@@ -33,6 +33,8 @@ Of note:
 <a href="https://drive.google.com/file/d/1-zm5MQK1nnfP65ZB_3_jmzaBJFkxkhV3/view?usp=sharing">Introduction video on how it works</a>.
 Need a feature? Something not working? <a href=mailto:edannewitz@auhsdschools.org>Drop me a line.</a>
 <h2>Version History</h2>
-<ul><li>.06 - Changed some of the error handling. Script will quit out and email when it encounters a class that is in ASAP but not in Canvas nor in the JSON config file as a skipped class. Restarting the script after fixing the error will not duplicate anything on the user end or Canvas end. (10/26/2020)
+<ul>
+<li>.07 - Added more error checking. Will now also include in the emails sent out if it skipped over classes in the skip classes list.
+<li>.06 - Changed some of the error handling. Script will quit out and email when it encounters a class that is in ASAP but not in Canvas nor in the JSON config file as a skipped class. Restarting the script after fixing the error will not duplicate anything on the user end or Canvas end. (10/26/2020)
 <li>.01 - Initial Release
 
