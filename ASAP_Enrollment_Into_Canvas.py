@@ -37,6 +37,7 @@ dmsg['From'] = configs['SMTPAddressFrom']
 msg['To'] = configs['SendInfoEmailAddr']
 dmsg['To'] = configs['DebugEmailAddr']
 msgbody = ''
+skippedbody = ''
 dmsgbody = ''
 #Function to enroll or unenroll a student
 def enrollstudent():
@@ -212,11 +213,14 @@ elif r.status_code == 200:
             logging.info('Found course in Skip List. Course Code-> ' + newenrolls['ScheduledEvent.EventCd'][i])
             if configs['Debug'] == "True":
                 dmsgbody = dmsgbody + 'Skipping enrollment for ' + newenrolls['Person.Email'][i] + ', found course code ' + newenrolls['ScheduledEvent.EventCd'][i] + ' in skip list.\n'
-            msgbody = msgbody + 'Skipping enrollment for ' + newenrolls['Person.Email'][i] + ', found course code ' + newenrolls['ScheduledEvent.EventCd'][i] + ' in skip list.\n'
+            skippedbody = skippedbody + 'Skipping enrollment for ' + newenrolls['Person.Email'][i] + ', found course code ' + newenrolls['ScheduledEvent.EventCd'][i] + ' in skip list.\n'
     # Send event email to interested admins on new enrolls or drops
     s = smtplib.SMTP(configs['SMTPServerAddress'])
     if msgbody == '':
-        msgbody = 'No new enrollments or drops for this iteration of ASAP-Canvas script\n\nSad Mickey\n'
+        if skippedbody == '':
+            msgbody = 'No new enrollments or drops for this iteration of ASAP-Canvas script\n\nSad Mickey\n'
+        else:
+            msgbody = 'No new enrollments or drops for this iteration of ASAP-Canvas script\n\nSkipped enrolling these as course codes were in skip list:\n\n' + skippedbody + '\n\nSad Mickey\n'
         lastrunplace.to_csv(lastrunplacefilename)
         dmsgbody = dmsgbody + 'Wrote previous last record back to file'
     else:
