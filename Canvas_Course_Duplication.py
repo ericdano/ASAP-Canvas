@@ -1,15 +1,22 @@
 import pandas as pd
-import requests, json, logging, smtplib, datetime
+import requests, json, logging, smtplib, datetime, sys
 from canvasapi import Canvas
 from canvasapi.exceptions import CanvasException
 from pathlib import Path
 from email.message import EmailMessage
-# ASAP Connected to Canvas importer version .01
-# This program grabs data from ASAP connected's API, dones so light processing,
-# and creates new users in Canvas, adds new users to a tutorial class in Canvas,
-# and then enrolls them into their class
-# It also remembers where it left off in ASAP
+# Useage C:\python Canvas_Course_Duplication.py nameofcsv.csv
 #
+# This program reads a CSV file with the fields of
+# NewSIS_ID, CurrentSIS_ID, CourseName
+# It will create a new course with the SIS_ID from the CSV or use a course that already has the SIS_ID
+# and copy the CurrentSIS_ID course contents to the new course
+# and enroll the CurrentSIS_ID course teacher in the new course as the teacher
+# version .01
+# Created to help more easily roll over classes to a new term for Acalanes Adult Ed
+#
+# New classes are created using a Term defined here set to what it is in your Canvas Instance
+CurrentCanvasTerm = 'Winter 2021'
+csvfilename = sys.argv[1]
 #load configs
 home = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
 confighome = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
@@ -31,7 +38,7 @@ dmsg['To'] = configs['DebugEmailAddr']
 dmsgbody = ''
 #Function to Copy Course
 def copy_to_new_course():
-    print('Copying Course.....I think......')
+    print('Copying Course....')
     print(term_id)
     print(asapcoursestocopy['NewSIS_ID'][i])
     # Get new course
@@ -55,7 +62,7 @@ account = canvas.get_account(1)
 terms = account.get_enrollment_terms()
 term_id = 0
 for term in terms:
-    if term.name == 'Winter 2021':
+    if term.name == CurrentCanvasTerm:
         logging.info('Loading CSV file to process')
         term_id = term.id
     else:
@@ -64,7 +71,7 @@ logging.info('Loading CSV file to process')
 if configs['Debug'] == "True":
     dmsgbody = dmsgbody + 'Loading csv file....\n'
 #read the csv file
-asapcoursestocopy = pd.read_csv('asapcoursestocopy.csv', dtype=str)
+asapcoursestocopy = pd.read_csv(csvfilename, dtype=str)
 print('Loaded CSV....')
 for i in asapcoursestocopy.index:
     print(asapcoursestocopy['NewSIS_ID'][i])
