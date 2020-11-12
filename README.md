@@ -29,6 +29,12 @@ Of note:
 <li><b>NewUserCourse</b> is a Canvas Introduction course we created for our students to give them a run down on what Canvas is and how to use it. Totally optional, and if you are not going to use it, then don't set it.
 <li><b>SkipCourses</b> are courses we are not enrolling users into Canvas for. We offer some English language placement tests, and we do not put a student in Canvas when they are just enrolled in those classes. You can add a infinite list of skipped classes.
 </ul>
+<h2>Scripts</h2>
+<UL>
+  <li><b>ASAP_Classes_to_CSV.py</b> - This program needs a filename to run. So 'python ASAP_Classes_to_CSV.py output.csv' Generates a CSV of the current stuff out of ASAP Connected
+  <li><b>ASAP_Enrollment_Into_Canvas.py</b> - This program reads a csv file of where to start, grabs data from ASAP Connected, and enrolls students into Canvas
+  <li><b>Canvas_Course_Duplication.py</b> - This program copies a course from Canvas to a new course in Canvas. Reads a CSV file containing the SIS_ID of current course, SIS_ID of new course, and new course name. Will also put the course in the right subaccount based on the course you are copying from. And it will enroll the teacher of the copied course into the new course. It will ALSO put the course into a new Term. You need to set that IN THE PYTHON SCRIPT. Name needs to match whatever it is in Canvas. So if you are copying current course to a new term of 'Spring 2021', then set the Term to be 'Spring 2021'
+</ul>
 <h2>Support</h2>
 <a href="https://drive.google.com/file/d/1-zm5MQK1nnfP65ZB_3_jmzaBJFkxkhV3/view?usp=sharing">Introduction video on how it works</a>.
 Need a feature? Something not working? <a href=mailto:edannewitz@auhsdschools.org>Drop me a line.</a>
