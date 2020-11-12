@@ -68,7 +68,6 @@ for term in terms:
     else:
        logging.info('Can not Find Term')
        print('Error....cannot find term')
-       raise
 logging.info('Loading CSV file to process')
 if configs['Debug'] == "True":
     dmsgbody = dmsgbody + 'Loading csv file....\n'
