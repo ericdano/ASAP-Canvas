@@ -39,8 +39,8 @@ dmsgbody = ''
 #Function to Copy Course
 def copy_to_new_course():
     print('Copying Course....')
-    print(term_id)
-    print(asapcoursestocopy['NewSIS_ID'][i])
+    print('New course id is -> ' + asapcoursestocopy['NewSIS_ID'][i])
+    logging.info('Starting copying process to new course id' + asapcoursestocopy['NewSIS_ID'][i])
     # Get new course
     new_course = canvas.get_course(asapcoursestocopy['NewSIS_ID'][i], use_sis_id=True)
     # Get old course
@@ -67,6 +67,8 @@ for term in terms:
         term_id = term.id
     else:
        logging.info('Can not Find Term')
+       print('Error....cannot find term')
+       raise
 logging.info('Loading CSV file to process')
 if configs['Debug'] == "True":
     dmsgbody = dmsgbody + 'Loading csv file....\n'
@@ -84,7 +86,7 @@ for i in asapcoursestocopy.index:
     except CanvasException as e:
         if str(e) == "Not Found":
         #course does not exist, create it
-            logging.info('Course not in Canvas')
+            logging.info('Course ' + asapcoursestocopy['NewSIS_ID'][i] + ' is not in Canvas')
             print('Course not in Canvas, creating')
             dmsgbody = dmsgbody + asapcoursestocopy['NewSIS_ID'][i] + ' is NOT in Canvas\n'
             old_course1 = canvas.get_course(asapcoursestocopy['CurrentSIS_ID'][i],use_sis_id=True)
