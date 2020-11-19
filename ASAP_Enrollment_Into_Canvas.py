@@ -49,7 +49,7 @@ def enrollstudent():
     coursetoenroll = newenrolls['ScheduledEvent.EventCd'][i]
     try:
         course = canvas.get_course(coursetoenroll,'sis_course_id')
-        if newenrolls['ScheduledEvent.EventCd'][i] == "DROPPED":
+        if newenrolls['EnrollmentStatusCd'][i] == "DROPPED":
             if configs['Debug'] == "True":
                 dmsgbody = dmsgbody + 'Dropping ' + newenrolls['Person.Email'][i] +'\n'
             enrollments = course.get_enrollments(type='StudentEnrollment')
