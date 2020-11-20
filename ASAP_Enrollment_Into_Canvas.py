@@ -54,6 +54,7 @@ def enrollstudent():
                 dmsgbody = dmsgbody + 'Dropping ' + newenrolls['Person.Email'][i] +'\n'
             enrollments = course.get_enrollments(type='StudentEnrollment')
             for stu in enrollments:
+                # You have to loop through all the enrollments for the class and then find the student id in the enrollment then tell it to delete it.
                 if stu.user_id == user.id:
                     stu.deactivate(task='delete')
                     logging.info('Deleted student from ' + newenrolls['ScheduledEvent.Course.CourseName'][i])
