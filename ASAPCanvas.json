@@ -18,5 +18,8 @@
   "SkipCourses": ["5", "6"],
   "SMTPAddressFrom": "noreply@domain.com",
   "SMPTStatusMessage": "ASAP-Canvas Event Log",
-  "SMTPServerAddress": ""
+  "SMTPServerAddress": "",
+  "IntroLetterPath": "E:/AEMessage/",
+  "IntroLetterFile" : "AEMessage.html",
+  "SentIntroLetters": "SentIntroEmails.csv" 
 }
