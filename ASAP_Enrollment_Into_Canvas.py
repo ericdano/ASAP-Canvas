@@ -52,7 +52,7 @@ def emailintroletter():
     print('Starting Send')
     logging.info('Prepping to send intro letter from AE')
     IntroLetterRoot = MIMEMultipart('related')
-    IntroLetterRoot['Subject'] = 'test message letter with formatting'
+    IntroLetterRoot['Subject'] = 'Acalanes Adult Winter 2021 Enrollment'
     IntroLetterRoot['From'] = configs['SMTPAddressFrom']
     IntroLetterRoot['To'] = newenrolls['Person.Email'][i]
     IntroLetterRoot.preamble = 'This is a multi-part message in MIME format.'
