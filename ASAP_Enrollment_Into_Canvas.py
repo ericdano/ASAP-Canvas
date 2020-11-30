@@ -1,5 +1,5 @@
 import pandas as pd
-import requests, json, logging, smtplib, datetime
+import requests, json, logging, smtplib, datetime, smtplib
 from canvasapi import Canvas
 from canvasapi.exceptions import CanvasException
 from pathlib import Path
@@ -36,12 +36,50 @@ dmsg = EmailMessage()
 msg['Subject'] = str(configs['SMTPStatusMessage'] + " " + datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y"))
 dmsg['Subject'] = str("Debug - " + configs['SMTPStatusMessage'] + " " + datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y"))
 msg['From'] = configs['SMTPAddressFrom']
+introletterfrom = configs['SMTPAddressFrom']
 dmsg['From'] = configs['SMTPAddressFrom']
 msg['To'] = configs['SendInfoEmailAddr']
 dmsg['To'] = configs['DebugEmailAddr']
 msgbody = ''
 skippedbody = ''
 dmsgbody = ''
+logging.info('Reading Previous Sent Intro Letters file')
+SentIntroLetters = pd.read_csv(Path(configs['IntroLetterPath']+configs['SentIntroLetters']))
+#Funcction to email intro letter out to new Students
+#Looks for a CVS file of emails previously sent out to not send out the same letter again
+def emailintroletter():
+    global SentIntroLetters
+    print('Starting Send')
+    logging.info('Prepping to send intro letter from AE')
+    IntroLetterRoot = MIMEMultipart('related')
+    IntroLetterRoot['Subject'] = 'test message letter with formatting'
+    IntroLetterRoot['From'] = configs['SMTPAddressFrom']
+    IntroLetterRoot['To'] = newenrolls['Person.Email'][i]
+    IntroLetterRoot.preamble = 'This is a multi-part message in MIME format.'
+    IntroLetterAlt = MIMEMultipart('alternative')
+    IntroLetterRoot.attach(IntroLetterAlt)
+    IntroLetterText = MIMEText('This is the alternative plain text message.')
+    IntroLetterAlt.attach(IntroLetterText)
+    logging.info('Reading Previous Sent Intro Letters file')
+    messagepath = Path(configs['IntroLetterPath']+configs['IntroLetterFile'])
+    introfp1 = open(messagepath,'r')
+    IntroLetterText = MIMEText(introfp1.read(),'html')
+    IntroLetterAlt.attach(IntroLetterText)
+    introfp1.close()
+    imagepath =Path(configs['IntroLetterPath']+"aeimage1.jpg")
+    introfp = open(imagepath, 'rb')
+    IntroLetterImage = MIMEImage(introfp.read())
+    introfp.close()
+    IntroLetterImage.add_header('Content-ID', '<image1>')
+    IntroLetterRoot.attach(IntroLetterImage)
+    smtpintroletter = smtplib.SMTP()
+    smtpintroletter.connect(configs['SMTPServerAddress'])
+    smtpintroletter.sendmail(configs['SMTPAddressFrom'], newenrolls['Person.Email'][i], IntroLetterRoot.as_string())
+    smtpintroletter.quit()
+    SentIntroLetters = SentIntroLetters.append({'Email': newenrolls['Person.Email'][i]},ignore_index=True)
+    SentIntroLetters.to_csv(Path(configs['IntroLetterPath']+configs['SentIntroLetters']))
+
+
 #Function to enroll or unenroll a student
 def enrollstudent():
     global msgbody, dmsgbody
@@ -170,6 +208,11 @@ elif r.status_code == 200:
                 logging.info(newenrolls['Person.Email'][i] + " is in Canvas")
                 if configs['Debug'] == "True":
                     dmsgbody = dmsgbody + newenrolls['Person.Email'][i] + ' is in Canvas\n'
+                logging.info("Looking if we have sent intro letter to person...")
+                senttheletter = SentIntroLetters[SentIntroLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
+                if senttheletter.empty:
+                    logging.info("Going to send intro letter....")
+                    emailintroletter()
                 enrollstudent()
             except CanvasException as e:
             #It all starts with figuring out if the user is in Canvas and enroll in tutorial course
@@ -212,6 +255,11 @@ elif r.status_code == 200:
                                                         )
                         msgbody = msgbody + 'Enrolled ' + emailaddr + ' for ' + newusername + ' in the Intro to Canvas course\n'
                         dmsgbody = dmsgbody + 'Enrolled ' + emailaddr + ' for ' + newusername + ' in the Intro to Canvas course\n'
+                    logging.info("Looking if we have sent intro letter to person...")
+                    senttheletter = SentIntroLetters[SentIntroLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
+                    if senttheletter.empty:
+                        logging.info("Going to send intro letter....")
+                        emailintroletter()
                     enrollstudent()
         else:
             logging.info('Found course in Skip List. Course Code-> ' + newenrolls['ScheduledEvent.EventCd'][i])
