@@ -34,12 +34,14 @@ Of note:
   <li><b>ASAP_Classes_to_CSV.py</b> - This program needs a filename to run. So 'python ASAP_Classes_to_CSV.py output.csv' Generates a CSV of the current stuff out of ASAP Connected
   <li><b>ASAP_Enrollment_Into_Canvas.py</b> - This program reads a csv file of where to start, grabs data from ASAP Connected, and enrolls students into Canvas
   <li><b>Canvas_Course_Duplication.py</b> - This program copies a course from Canvas to a new course in Canvas. Reads a CSV file containing the SIS_ID of current course, SIS_ID of new course, and new course name. Will also put the course in the right subaccount based on the course you are copying from. And it will enroll the teacher of the copied course into the new course. It will ALSO put the course into a new Term. You need to set that IN THE PYTHON SCRIPT. Name needs to match whatever it is in Canvas. So if you are copying current course to a new term of 'Spring 2021', then set the Term to be 'Spring 2021'
+  <li><b>Canvas Enroll Teacher In Course</b> - Bypasses you needing to wait for them to accept being the teacher in the class.
 </ul>
 <h2>Support</h2>
 <a href="https://drive.google.com/file/d/1-zm5MQK1nnfP65ZB_3_jmzaBJFkxkhV3/view?usp=sharing">Introduction video on how it works</a>.
 Need a feature? Something not working? <a href=mailto:edannewitz@auhsdschools.org>Drop me a line.</a>
 <h2>Version History</h2>
 <ul>
+<li>.09 - Added a procedure to send out a "Welcome message" for people who are enrolling. It is sorta "Acalanes specific", but it is taking a html file (actually a letter that was done in Google Docs, and taking the html file and graphic and sending it out through the smtp server. It is also keeping track of whom it has sent out this "welcome" message to' If you do not want to use that, then comment out any references to emailintroletter() out in the python file.
 <li>.07 - Added more error checking. Will now also include in the emails sent out if it skipped over classes in the skip classes list.
 <li>.06 - Changed some of the error handling. Script will quit out and email when it encounters a class that is in ASAP but not in Canvas nor in the JSON config file as a skipped class. Restarting the script after fixing the error will not duplicate anything on the user end or Canvas end. (10/26/2020)
 <li>.01 - Initial Release
