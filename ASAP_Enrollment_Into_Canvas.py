@@ -48,8 +48,7 @@ SentIntroLetters = pd.read_csv(Path(configs['IntroLetterPath']+configs['SentIntr
 #Funcction to email intro letter out to new Students
 #Looks for a CVS file of emails previously sent out to not send out the same letter again
 def emailintroletter():
-    global SentIntroLetters
-    print('Starting Send')
+    global SentIntroLetters, msgbody, dmsgbody
     logging.info('Prepping to send intro letter from AE')
     IntroLetterRoot = MIMEMultipart('related')
     IntroLetterRoot['Subject'] = 'Acalanes Adult Winter 2021 Enrollment'
@@ -79,7 +78,11 @@ def emailintroletter():
     new_row = {'Email': newenrolls['Person.Email'][i]}
     SentIntroLetters = SentIntroLetters.append(new_row,ignore_index=True)
     SentIntroLetters.to_csv(Path(configs['IntroLetterPath']+configs['SentIntroLetters']))
-
+    logging.info('Intro letter sent to ' + newenrolls['Person.Email'][i])
+    if configs['Debug'] == "True":
+        dmsgbody = dmsgbody + 'Added ' + newenrolls['Person.Email'][i] + 'to sent CSV file.\n'
+        dmsgbody = dmsgbody + 'Sent intro letter to ' + newenrolls['Person.Email'][i] + '\n'
+    msgbody = msgbody + 'Sent intro letter to ' + newenrolls['Person.Email'][i] + '\n'    
 
 #Function to enroll or unenroll a student
 def enrollstudent():
