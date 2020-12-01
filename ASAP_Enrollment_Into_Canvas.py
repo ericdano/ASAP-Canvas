@@ -76,7 +76,8 @@ def emailintroletter():
     smtpintroletter.connect(configs['SMTPServerAddress'])
     smtpintroletter.sendmail(configs['SMTPAddressFrom'], newenrolls['Person.Email'][i], IntroLetterRoot.as_string())
     smtpintroletter.quit()
-    SentIntroLetters = SentIntroLetters.append({'Email': newenrolls['Person.Email'][i]},ignore_index=True)
+    new_row = {'Email': newenrolls['Person.Email'][i]}
+    SentIntroLetters = SentIntroLetters.append(new_row,ignore_index=True)
     SentIntroLetters.to_csv(Path(configs['IntroLetterPath']+configs['SentIntroLetters']))
 
 
