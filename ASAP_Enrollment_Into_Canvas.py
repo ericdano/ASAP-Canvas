@@ -75,14 +75,13 @@ def emailintroletter():
     smtpintroletter.connect(configs['SMTPServerAddress'])
     smtpintroletter.sendmail(configs['SMTPAddressFrom'], newenrolls['Person.Email'][i], IntroLetterRoot.as_string())
     smtpintroletter.quit()
-    new_row = {'Email': newenrolls['Person.Email'][i]}
-    SentIntroLetters = SentIntroLetters.append(new_row,ignore_index=True)
-    SentIntroLetters.to_csv(Path(configs['IntroLetterPath']+configs['SentIntroLetters']))
+    SentIntroLetters = SentIntroLetters.append({'Email': newenrolls['Person.Email'][i]},ignore_index=True)
+    SentIntroLetters.to_csv(Path(configs['IntroLetterPath']+configs['SentIntroLetters']), index=False)
     logging.info('Intro letter sent to ' + newenrolls['Person.Email'][i])
     if configs['Debug'] == "True":
         dmsgbody = dmsgbody + 'Added ' + newenrolls['Person.Email'][i] + 'to sent CSV file.\n'
         dmsgbody = dmsgbody + 'Sent intro letter to ' + newenrolls['Person.Email'][i] + '\n'
-    msgbody = msgbody + 'Sent intro letter to ' + newenrolls['Person.Email'][i] + '\n'    
+    msgbody = msgbody + 'Sent intro letter to ' + newenrolls['Person.Email'][i] + '\n'
 
 #Function to enroll or unenroll a student
 def enrollstudent():
