@@ -27,14 +27,11 @@ for i in courses:
     df = df.append({'courseid':i.id,
                'coursename':i.name,
                'sistermid':i.term['sis_term_id'],
-               'newcoursename':i.name + ' - Fall 2020'}, ignore_index=True)
+               'newcoursename':'Fall 2020 - ' + i.name}, ignore_index=True)
 for index, row in df.iterrows():
     if row["sistermid"]=="FALL2020":
         print("Updating term->",row["sistermid"]," courseid:",row["courseid"],"->",row["coursename"]," to ",row["newcoursename"])
-#  coursecode = row["NewShortName"]
-#  newname = row["New name"]
-#  cid = row["id"]
-#  print("to ->",coursecode,newname)
-#  course = canvas.get_course(cid)
-#  course.update(course={'name': newname})
-#  course.update(course={'course_code': coursecode})
+        newname = row["newcoursename"]
+        cid = row["courseid"]
+        course = canvas.get_course(cid)
+        course.update(course={'name': newname})
