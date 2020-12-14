@@ -13,17 +13,28 @@ with open(confighome) as f:
 #-----Canvas Info
 Canvas_API_URL = configs['CanvasAPIURL']
 Canvas_API_KEY = configs['CanvasAPIKey']
-df = pd.read_csv('Canvas-Course-Change-1FULL.csv')
+#df = pd.read_csv('Canvas-Course-Change-1FULL.csv')
 #Connect to Canvvas
-canvas = Canvas(API_URL, API_KEY)
+canvas = Canvas(Canvas_API_URL, Canvas_API_KEY)
 account = canvas.get_account(1)
-
+column_names = ["courseid","coursename","sistermid","newcoursename"]
+df = pd.DataFrame(columns = column_names)
+courses=account.get_courses(include=['term','sis_term_id'])
+for i in courses:
+    #print(i.id)
+    #print(i.name)
+    #print(i.term['sis_term_id'])
+    df = df.append({'courseid':i.id,
+               'coursename':i.name,
+               'sistermid':i.term['sis_term_id'],
+               'newcoursename':i.name + ' - Fall 2020'}, ignore_index=True)
 for index, row in df.iterrows():
-  print("Updating",row["id"],row["NewShortName"],row["New name"])
-  coursecode = row["NewShortName"]
-  newname = row["New name"]
-  cid = row["id"]
-  print("to ->",coursecode,newname)
-  course = canvas.get_course(cid)
-  course.update(course={'name': newname})
-  course.update(course={'course_code': coursecode})
+    if row["sistermid"]=="FALL2020":
+        print("Updating term->",row["sistermid"]," courseid:",row["courseid"],"->",row["coursename"]," to ",row["newcoursename"])
+#  coursecode = row["NewShortName"]
+#  newname = row["New name"]
+#  cid = row["id"]
+#  print("to ->",coursecode,newname)
+#  course = canvas.get_course(cid)
+#  course.update(course={'name': newname})
+#  course.update(course={'course_code': coursecode})
