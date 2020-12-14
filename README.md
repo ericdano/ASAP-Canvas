@@ -35,6 +35,7 @@ Of note:
   <li><b>ASAP_Enrollment_Into_Canvas.py</b> - This program reads a csv file of where to start, grabs data from ASAP Connected, and enrolls students into Canvas
   <li><b>Canvas_Course_Duplication.py</b> - This program copies a course from Canvas to a new course in Canvas. Reads a CSV file containing the SIS_ID of current course, SIS_ID of new course, and new course name. Will also put the course in the right subaccount based on the course you are copying from. And it will enroll the teacher of the copied course into the new course. It will ALSO put the course into a new Term. You need to set that IN THE PYTHON SCRIPT. Name needs to match whatever it is in Canvas. So if you are copying current course to a new term of 'Spring 2021', then set the Term to be 'Spring 2021'
   <li><b>Canvas Enroll Teacher In Course</b> - Bypasses you needing to wait for them to accept being the teacher in the class.
+  <li><b>Canvas_Rename_Course_EndOfTerm</b> - Script to take whatever term (sis_id of term), and tack on an additional line to the title of classes. We used it for "archiving" older classes, so a class titled "Spanish 1b" that was in the Fall 2020 term, is now title "Fall 2020 - Spanish 1b".
 </ul>
 <h2>Support</h2>
 <a href="https://drive.google.com/file/d/1-zm5MQK1nnfP65ZB_3_jmzaBJFkxkhV3/view?usp=sharing">Introduction video on how it works</a>.
