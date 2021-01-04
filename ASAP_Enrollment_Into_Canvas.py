@@ -87,14 +87,18 @@ def emailintroletter():
 def enrollstudent():
     global msgbody, dmsgbody
     if configs['Debug'] == "True":
-        print('Enrolling ' + newenrolls['Person.Email'][i] + ' into ID ' +  newenrolls['ScheduledEvent.EventCd'][i])
-        dmsgbody = dmsgbody + 'Enrolling ' + newenrolls['Person.Email'][i] + ' into ID ' +  newenrolls['ScheduledEvent.EventCd'][i] + '\n'
-    logging.info('Found user - doing enrollments')
+        logging.info('Looking at ' + newenrolls['Person.Email'][i] + ' enrollment status for ID ' +  newenrolls['ScheduledEvent.EventCd'][i])
+        dmsgbody = dmsgbody + 'Looking at ' + newenrolls['Person.Email'][i] + ' enrollment status for ID ' +  newenrolls['ScheduledEvent.EventCd'][i] + '\n'
+    logging.info('Found user - look at enrollments')
     coursetoenroll = newenrolls['ScheduledEvent.EventCd'][i]
     try:
         course = canvas.get_course(coursetoenroll,'sis_course_id')
+        if configs['Debug'] == 'True':
+            logging.info('EnrollmentStatusCd field is ' + newenrolls['EnrollmentStatusCd'][i])
+            dmsgbody = dmsgbody + 'Field is ' + newenrolls['EnrollmentStatusCd'][i]
         if newenrolls['EnrollmentStatusCd'][i] == "DROPPED":
             if configs['Debug'] == "True":
+                logging.info('Dropping ' + newenrolls['Person.Email'][i])
                 dmsgbody = dmsgbody + 'Dropping ' + newenrolls['Person.Email'][i] +'\n'
             enrollments = course.get_enrollments(type='StudentEnrollment')
             for stu in enrollments:

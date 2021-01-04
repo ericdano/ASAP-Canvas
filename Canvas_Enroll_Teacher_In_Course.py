@@ -37,3 +37,4 @@ try:
 except CanvasException as e:
     if str(e) == "Not Found":
         print('Error finding course')
+        print(str(e))
