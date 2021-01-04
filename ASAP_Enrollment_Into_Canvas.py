@@ -95,7 +95,7 @@ def enrollstudent():
         course = canvas.get_course(coursetoenroll,'sis_course_id')
         if configs['Debug'] == 'True':
             logging.info('EnrollmentStatusCd field is ' + newenrolls['EnrollmentStatusCd'][i])
-            dmsgbody = dmsgbody + 'Field is ' + newenrolls['EnrollmentStatusCd'][i]
+            dmsgbody = dmsgbody + 'Field is ' + newenrolls['EnrollmentStatusCd'][i] + '\n'
         if newenrolls['EnrollmentStatusCd'][i] == "DROPPED":
             if configs['Debug'] == "True":
                 logging.info('Dropping ' + newenrolls['Person.Email'][i])
