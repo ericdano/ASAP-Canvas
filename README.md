@@ -42,6 +42,8 @@ Of note:
 Need a feature? Something not working? <a href=mailto:edannewitz@auhsdschools.org>Drop me a line.</a>
 <h2>Version History</h2>
 <ul>
+<li>.091 - Changed the ASAP API string to better catch drops and enrollments. Should be in this form
+  https://api.asapconnected.com/api/Enrollments?includeAttendance=false&classStartDate=11-01-2020&classEndDate=04-01-2021&enrollmentStartDate=11-01-2020&enrollmentEndDate=04-01-2021
 <li>.09 - Added a procedure to send out a "Welcome message" for people who are enrolling. It is sorta "Acalanes specific", but it is taking a html file (actually a letter that was done in Google Docs, and taking the html file and graphic and sending it out through the smtp server. It is also keeping track of whom it has sent out this "welcome" message to' If you do not want to use that, then comment out any references to emailintroletter() out in the python file.
 <li>.07 - Added more error checking. Will now also include in the emails sent out if it skipped over classes in the skip classes list.
 <li>.06 - Changed some of the error handling. Script will quit out and email when it encounters a class that is in ASAP but not in Canvas nor in the JSON config file as a skipped class. Restarting the script after fixing the error will not duplicate anything on the user end or Canvas end. (10/26/2020)
