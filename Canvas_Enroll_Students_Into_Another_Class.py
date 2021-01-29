@@ -35,15 +35,17 @@ for user in users:
                 'user_id':user.id}, ignore_index=True)
 print('Printing Pandas Dataframe')
 for index, row in df.iterrows():
-    print(row["course_sis_id"],",",row["student_sis_id"],",",row["user_id"])
-
-#    enrollment = course.enroll_user(user,"StudentEnrollment",
-#                                        enrollment = {
-#                                                    "sis_course_id": coursetoenroll,
-#                                                    "notify": True,
-#                                                    "enrollment_state": "active"
-#                                                    }
-#                                                )
+    print("Adding to ",new_course_number," ",row["student_sis_id"],",",row["user_id"])
+    logging.info("Adding student ",row["student_sis_id"] + " to " + new_course_number)
+    new_user = canvas.get_user(row["user_id"])
+    new_course = canvas.get_course(new_course_number,'sis_course_id')
+    enrollment = new_course.enroll_user(new_user,"StudentEnrollment",
+                                        enrollment = {
+                                                    "sis_course_id": new_course_number,
+                                                    "notify": True,
+                                                    "enrollment_state": "active"
+                                                    }
+                                                )
 #for index, row in df.iterrows():
 #  print("Updating",row["id"],row["NewShortName"],row["New name"])
 #  coursecode = row["NewShortName"]
