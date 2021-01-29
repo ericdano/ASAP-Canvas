@@ -17,7 +17,7 @@ with open(confighome) as f:
 #-----Canvas Info
 Canvas_API_URL = configs['CanvasAPIURL']
 Canvas_API_KEY = configs['CanvasAPIKey']
-column_name = ["course_sis_id","student_sis_id","user_id"]
+column_names = ["course_sis_id","student_sis_id","user_id"]
 df = pd.DataFrame(columns = column_names)
 #Connect to Canvvas
 canvas = Canvas(API_URL, API_KEY)
