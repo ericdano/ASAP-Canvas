@@ -17,21 +17,21 @@ with open(confighome) as f:
 #-----Canvas Info
 Canvas_API_URL = configs['CanvasAPIURL']
 Canvas_API_KEY = configs['CanvasAPIKey']
-column_names = ["course_sis_id","student_sis_id","user_id"]
+column_names = ["student_sis_id","user_id"]
 df = pd.DataFrame(columns = column_names)
 #Connect to Canvvas
-canvas = Canvas(API_URL, API_KEY)
+canvas = Canvas(Canvas_API_URL, Canvas_API_KEY)
 account = canvas.get_account(1)
-
-course = canvas.get_course(course_number)
+print(course_number)
+course = canvas.get_course(course_number,use_sis_id=True)
 users = course.get_users(
                 enrollment_type=['student']
                 )
 #Get Users for a course_number
+print(new_course_number)
 for user in users:
   print(user)
-  df = df.append({'course_sis_id"':new_course_number,
-                'student_sis_id':user.sis_user_id,
+  df = df.append({'student_sis_id':user.sis_user_id,
                 'user_id':user.id}, ignore_index=True)
 print('Printing Pandas Dataframe')
 for index, row in df.iterrows():
