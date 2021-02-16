@@ -51,7 +51,7 @@ def emailintroletter():
     global SentIntroLetters, msgbody, dmsgbody
     logging.info('Prepping to send intro letter from AE')
     IntroLetterRoot = MIMEMultipart('related')
-    IntroLetterRoot['Subject'] = 'Acalanes Adult Winter 2021 Enrollment'
+    IntroLetterRoot['Subject'] = 'Acalanes Adult Education Spring/Summer 2021 Enrollment'
     IntroLetterRoot['From'] = configs['SMTPAddressFrom']
     IntroLetterRoot['To'] = newenrolls['Person.Email'][i]
     IntroLetterRoot.preamble = 'This is a multi-part message in MIME format.'
@@ -93,7 +93,7 @@ def enrollstudent():
     coursetoenroll = newenrolls['ScheduledEvent.EventCd'][i]
     try:
         course = canvas.get_course(coursetoenroll,'sis_course_id')
-            logging.info('EnrollmentStatusCd field is ' + newenrolls['EnrollmentStatusCd'][i])
+        logging.info('EnrollmentStatusCd field is ' + newenrolls['EnrollmentStatusCd'][i])
         if configs['Debug'] == 'True':
             dmsgbody = dmsgbody + 'Field is ' + newenrolls['EnrollmentStatusCd'][i] + '\n'
         if newenrolls['EnrollmentStatusCd'][i] == "DROPPED":
