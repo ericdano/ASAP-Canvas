@@ -27,7 +27,7 @@ for i in courses:
     df = df.append({'courseid':i.id,
                'coursename':i.name,
                'sistermid':i.term['sis_term_id'],
-               'newcoursename':'Fall 2020 - ' + i.name}, ignore_index=True)
+               'newcoursename':'Winter 2021 - ' + i.name}, ignore_index=True)
 for index, row in df.iterrows():
     if row["sistermid"]=="FALL2020":
         print("Updating term->",row["sistermid"]," courseid:",row["courseid"],"->",row["coursename"]," to ",row["newcoursename"])
