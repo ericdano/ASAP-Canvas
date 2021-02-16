@@ -15,7 +15,7 @@ from email.message import EmailMessage
 # Created to help more easily roll over classes to a new term for Acalanes Adult Ed
 #
 # New classes are created using a Term defined here set to what it is in your Canvas Instance
-CurrentCanvasTerm = 'Winter 2021'
+CurrentCanvasTerm = 'Spring 2021'
 csvfilename = sys.argv[1]
 #load configs
 home = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
