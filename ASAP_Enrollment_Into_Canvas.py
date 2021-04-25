@@ -232,6 +232,8 @@ elif r.status_code == 200:
                     sis_user_id = newenrolls['CustomerID'][i]
                     sortname = newenrolls['Person.LastName'][i] + ", " + newenrolls['Person.FirstName'][i]
                     emailaddr = newenrolls['Person.Email'][i]
+                    # Needed to add case of user who changed emailed in ASAP but the sis_user_id is the same
+                    # throw up error message and email to rectify
                     if configs['Debug'] == "True":
                         print(newusername + " " + str(sis_user_id) + " " + emailaddr)
                     user = account.create_user(
