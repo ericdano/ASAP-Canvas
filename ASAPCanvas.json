@@ -6,7 +6,7 @@
   "ASAPorgid": "",
   "ASAPpassword": "",
   "ASAPAPIKey": "",
-  "ASAPapiurl": "https://api.asapconnected.com/api/Enrollments?includeAttendance=false&classStartDate=11-01-2020&classEndDate=04-01-2021&enrollmentStartDate=11-01-2020&enrollmentEndDate=04-01-2021",
+  "ASAPapiurl": "https://api.asapconnected.com/api/Enrollments?includeAttendance=false&classStartDate=01-01-2021&classEndDate=07-19-2021&enrollmentStartDate=01-01-2021&enrollmentEndDate=07-19-2021",
   "logfilepath": ".ASAPCanvas",
   "logfilename": "canvasASAP.log",
   "ASAPlastposfile": "lastrecordasap.csv",
@@ -19,6 +19,7 @@
   "SMTPAddressFrom": "noreply@domain.com",
   "SMPTStatusMessage": "ASAP-Canvas Event Log",
   "SMTPServerAddress": "",
+  "SendIntroLetters": "True",
   "IntroLetterPath": "E:/AEMessage/",
   "IntroLetterFile" : "AEMessage.html",
   "SentIntroLetters": "SentIntroEmails.csv"
