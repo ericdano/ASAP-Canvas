@@ -42,6 +42,7 @@ Of note:
 Need a feature? Something not working? <a href=mailto:edannewitz@auhsdschools.org>Drop me a line.</a>
 <h2>Version History</h2>
 <ul>
+<li>.095 - Added a config variable to set if you want to send an intro letter or not for students enrolling for the first time this session. It will only send the email once as it keeps track of who it has emailed.
 <li>.091 - Changed the ASAP API string to better catch drops and enrollments. Should be in this form
   https://api.asapconnected.com/api/Enrollments?includeAttendance=false&classStartDate=11-01-2020&classEndDate=04-01-2021&enrollmentStartDate=11-01-2020&enrollmentEndDate=04-01-2021
 <li>.09 - Added a procedure to send out a "Welcome message" for people who are enrolling. It is sorta "Acalanes specific", but it is taking a html file (actually a letter that was done in Google Docs, and taking the html file and graphic and sending it out through the smtp server. It is also keeping track of whom it has sent out this "welcome" message to' If you do not want to use that, then comment out any references to emailintroletter() out in the python file.
