@@ -43,8 +43,9 @@ dmsg['To'] = configs['DebugEmailAddr']
 msgbody = ''
 skippedbody = ''
 dmsgbody = ''
-logging.info('Reading Previous Sent Intro Letters file')
-SentIntroLetters = pd.read_csv(Path(configs['IntroLetterPath']+configs['SentIntroLetters']))
+if configs['SendIntroLetters'] == "True":
+    logging.info('Reading Previous Sent Intro Letters file')
+    SentIntroLetters = pd.read_csv(Path(configs['IntroLetterPath']+configs['SentIntroLetters']))
 #Funcction to email intro letter out to new Students
 #Looks for a CVS file of emails previously sent out to not send out the same letter again
 def emailintroletter():
@@ -201,7 +202,6 @@ elif r.status_code == 200:
         dmsgbody = dmsgbody + 'Loading last record processed....\n'
     #load starting record position
     lastrunplace = pd.read_csv(lastrunplacefilename)
-    #print(lastrunplace['EventEnrollmentID'])
     logging.info('Last place was ' + str(lastrunplace))
     newenrolls = results[results['EventEnrollmentID'] > lastrunplace['EventEnrollmentID'][0]]
     logging.info("Looking for enrollments")
@@ -215,11 +215,12 @@ elif r.status_code == 200:
                 logging.info(newenrolls['Person.Email'][i] + " is in Canvas")
                 if configs['Debug'] == "True":
                     dmsgbody = dmsgbody + newenrolls['Person.Email'][i] + ' is in Canvas\n'
-                logging.info("Looking if we have sent intro letter to person...")
-                senttheletter = SentIntroLetters[SentIntroLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
-                if senttheletter.empty:
-                    logging.info("Going to send intro letter....")
-                    emailintroletter()
+                if configs['SendIntroLetters'] == "True":
+                    logging.info("Looking if we have sent intro letter to person...")
+                    senttheletter = SentIntroLetters[SentIntroLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
+                    if senttheletter.empty:
+                        logging.info("Going to send intro letter....")
+                        emailintroletter()
                 enrollstudent()
             except CanvasException as e:
             #It all starts with figuring out if the user is in Canvas and enroll in tutorial course
@@ -264,11 +265,14 @@ elif r.status_code == 200:
                                                         )
                         msgbody = msgbody + 'Enrolled ' + emailaddr + ' for ' + newusername + ' in the Intro to Canvas course\n'
                         dmsgbody = dmsgbody + 'Enrolled ' + emailaddr + ' for ' + newusername + ' in the Intro to Canvas course\n'
-                    logging.info("Looking if we have sent intro letter to person...")
-                    senttheletter = SentIntroLetters[SentIntroLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
-                    if senttheletter.empty:
-                        logging.info("Going to send intro letter....")
-                        emailintroletter()
+                    # Look in config to see that you want to send an intro letter to people this session
+                    if configs['SendIntroLetters'] == "True":
+                        logging.info("Looking if we have sent intro letter to person...")
+                        senttheletter = SentIntroLetters[SentIntroLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
+                        if senttheletter.empty:
+                            logging.info("Going to send intro letter....")
+                            emailintroletter()
+                    #after doing the letters, then enroll the student
                     enrollstudent()
         else:
             logging.info('Found course in Skip List. Course Code-> ' + newenrolls['ScheduledEvent.EventCd'][i])
