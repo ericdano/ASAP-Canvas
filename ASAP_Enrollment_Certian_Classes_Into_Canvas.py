@@ -38,46 +38,6 @@ dmsg['To'] = configs['DebugEmailAddr']
 msgbody = ''
 skippedbody = ''
 dmsgbody = ''
-if configs['SendIntroLetters'] == "True":
-    logging.info('Reading Previous Sent Intro Letters file')
-    SentIntroLetters = pd.read_csv(Path(configs['IntroLetterPath']+configs['SentIntroLetters']))
-#Funcction to email intro letter out to new Students
-#Looks for a CVS file of emails previously sent out to not send out the same letter again
-def emailintroletter():
-    global SentIntroLetters, msgbody, dmsgbody
-    logging.info('Prepping to send intro letter from AE')
-    IntroLetterRoot = MIMEMultipart('related')
-    IntroLetterRoot['Subject'] = 'Acalanes Adult Education Spring/Summer 2021 Enrollment'
-    IntroLetterRoot['From'] = configs['SMTPAddressFrom']
-    IntroLetterRoot['To'] = newenrolls['Person.Email'][i]
-    IntroLetterRoot.preamble = 'This is a multi-part message in MIME format.'
-    IntroLetterAlt = MIMEMultipart('alternative')
-    IntroLetterRoot.attach(IntroLetterAlt)
-    IntroLetterText = MIMEText('This is the alternative plain text message.')
-    IntroLetterAlt.attach(IntroLetterText)
-    logging.info('Reading Previous Sent Intro Letters file')
-    messagepath = Path(configs['IntroLetterPath']+configs['IntroLetterFile'])
-    introfp1 = open(messagepath,'r')
-    IntroLetterText = MIMEText(introfp1.read(),'html')
-    IntroLetterAlt.attach(IntroLetterText)
-    introfp1.close()
-    imagepath =Path(configs['IntroLetterPath']+"aeimage1.jpg")
-    introfp = open(imagepath, 'rb')
-    IntroLetterImage = MIMEImage(introfp.read())
-    introfp.close()
-    IntroLetterImage.add_header('Content-ID', '<image1>')
-    IntroLetterRoot.attach(IntroLetterImage)
-    smtpintroletter = smtplib.SMTP()
-    smtpintroletter.connect(configs['SMTPServerAddress'])
-    smtpintroletter.sendmail(configs['SMTPAddressFrom'], newenrolls['Person.Email'][i], IntroLetterRoot.as_string())
-    smtpintroletter.quit()
-    SentIntroLetters = SentIntroLetters.append({'Email': newenrolls['Person.Email'][i]},ignore_index=True)
-    SentIntroLetters.to_csv(Path(configs['IntroLetterPath']+configs['SentIntroLetters']), index=False)
-    logging.info('Intro letter sent to ' + newenrolls['Person.Email'][i])
-    if configs['Debug'] == "True":
-        dmsgbody = dmsgbody + 'Added ' + newenrolls['Person.Email'][i] + 'to sent CSV file.\n'
-        dmsgbody = dmsgbody + 'Sent intro letter to ' + newenrolls['Person.Email'][i] + '\n'
-    msgbody = msgbody + 'Sent intro letter to ' + newenrolls['Person.Email'][i] + '\n'
 
 #Function to enroll or unenroll a student
 def enrollstudent():
@@ -262,13 +222,6 @@ elif r.status_code == 200:
                                                         )
                         msgbody = msgbody + 'Enrolled ' + emailaddr + ' for ' + newusername + ' in the Intro to Canvas course\n'
                         dmsgbody = dmsgbody + 'Enrolled ' + emailaddr + ' for ' + newusername + ' in the Intro to Canvas course\n'
-                    # Look in config to see that you want to send an intro letter to people this session
-                    if configs['SendIntroLetters'] == "True":
-                        logging.info("Looking if we have sent intro letter to person...")
-                        senttheletter = SentIntroLetters[SentIntroLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
-                        if senttheletter.empty:
-                            logging.info("Going to send intro letter....")
-                            emailintroletter()
                     #after doing the letters, then enroll the student
                     enrollstudent()
         else:
