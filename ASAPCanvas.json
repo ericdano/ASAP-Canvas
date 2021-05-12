@@ -17,7 +17,7 @@
   "NewUserCourse": "767",
   "SkipCourses": ["5", "6"],
   "SMTPAddressFrom": "noreply@domain.com",
-  "SMPTStatusMessage": "ASAP-Canvas Event Log",
+  "SMTPStatusMessage": "ASAP-Canvas Event Log",
   "SMTPServerAddress": "",
   "SendIntroLetters": "True",
   "IntroLetterPath": "E:/AEMessage/",
