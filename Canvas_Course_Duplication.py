@@ -15,8 +15,12 @@ from email.message import EmailMessage
 # Created to help more easily roll over classes to a new term for Acalanes Adult Ed
 #
 # New classes are created using a Term defined here set to what it is in your Canvas Instance
-CurrentCanvasTerm = 'Summer 2021'
+if len(sys.argv) < 3:
+    print('Script needs two arguments: python name.csv "term"')
+    print('CSV file should be have headers of NewSIS_ID, CurrentSIS_ID, CourseName')
+    exit(0)
 csvfilename = sys.argv[1]
+CurrentCanvasTerm = sys.argv[2]
 #load configs
 home = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
 confighome = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
