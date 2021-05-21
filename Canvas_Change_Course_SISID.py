@@ -5,6 +5,8 @@ from pathlib import Path
 import requests, json, logging, smtplib, datetime, sys
 
 # Script to fix Course Names in our instance of CanvasAPIKey
+# takes a csv and changes the course codes
+# csv needs to have currentcoursecode and coursecodenew as fields in it
 csvfilename = sys.argv[1]
 home = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
 confighome = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
