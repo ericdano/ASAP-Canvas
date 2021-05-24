@@ -11,7 +11,7 @@ Using Python, API calls, <a href="https://pandas.pydata.org/">Pandas for Python<
 
 <h2>Requirements</h2>
 
-ASAP-Canvas uses Python 3.8.5, <a href="https://pandas.pydata.org/">Pandas for Python</a>, <a href="https://github.com/ucfopen/canvasapi">CanvasAPI</a>, and a few other Python libraries like requests (pip install requests
+ASAP-Canvas uses Python 3.9.5, <a href="https://pandas.pydata.org/">Pandas for Python</a>, <a href="https://github.com/ucfopen/canvasapi">CanvasAPI</a>, and a few other Python libraries like requests (pip install requests
 You will also need an API key generated from your Canvas instance, and an API key from ASAP Connected.
 
 <h2>Installation and First Run</h2>
@@ -42,6 +42,7 @@ Of note:
 Need a feature? Something not working? <a href=mailto:edannewitz@auhsdschools.org>Drop me a line.</a>
 <h2>Version History</h2>
 <ul>
+<li>.096 - Verified that Python 3.9.5 runs everything ok. Adding more error checking to everything.
 <li>.095 - Added a config variable to set if you want to send an intro letter or not for students enrolling for the first time this session. It will only send the email once as it keeps track of who it has emailed.
 <li>.091 - Changed the ASAP API string to better catch drops and enrollments. Should be in this form
   https://api.asapconnected.com/api/Enrollments?includeAttendance=false&classStartDate=11-01-2020&classEndDate=04-01-2021&enrollmentStartDate=11-01-2020&enrollmentEndDate=04-01-2021
