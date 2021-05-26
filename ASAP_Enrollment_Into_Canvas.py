@@ -45,7 +45,7 @@ skippedbody = ''
 dmsgbody = ''
 if configs['SendIntroLetters'] == "True":
     logging.info('Reading Previous Sent Intro Letters file')
-    SentIntroLetters = pd.read_csv(Path(configs['IntroLetterPath']+configs['SentIntroLetters']))
+    SentIntroLetters = pd.read_csv(Path(configs['IntroLetterPath']+configs['SentIntroLettersCSV']))
 #Funcction to email intro letter out to new Students
 #Looks for a CVS file of emails previously sent out to not send out the same letter again
 def emailintroletter():
@@ -77,7 +77,7 @@ def emailintroletter():
     smtpintroletter.sendmail(configs['SMTPAddressFrom'], newenrolls['Person.Email'][i], IntroLetterRoot.as_string())
     smtpintroletter.quit()
     SentIntroLetters = SentIntroLetters.append({'Email': newenrolls['Person.Email'][i]},ignore_index=True)
-    SentIntroLetters.to_csv(Path(configs['IntroLetterPath']+configs['SentIntroLetters']), index=False)
+    SentIntroLetters.to_csv(Path(configs['IntroLetterPath']+configs['SentIntroLettersCSV']), index=False)
     logging.info('Intro letter sent to ' + newenrolls['Person.Email'][i])
     if configs['Debug'] == "True":
         dmsgbody = dmsgbody + 'Added ' + newenrolls['Person.Email'][i] + 'to sent CSV file.\n'
