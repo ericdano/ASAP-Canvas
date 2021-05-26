@@ -22,5 +22,5 @@
   "SendIntroLetters": "True",
   "IntroLetterPath": "E:/AEMessage/",
   "IntroLetterFile" : "AEMessage.html",
-  "SentIntroLetters": "SentIntroEmails.csv"
+  "SentIntroLettersCSV": "SentIntroEmails.csv"
 }
