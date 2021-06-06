@@ -120,7 +120,7 @@ def enrollstudent(coursecodetoenroll,coursetoenrollname,enrollmentstatuscd,stude
                                                 "enrollment_state": "active"
                                                 }
                                             )
-            logging.info('Enrolled ' + studentemailaddress + ' in ' + coursetoenrollname
+            logging.info('Enrolled ' + studentemailaddress + ' in ' + coursetoenrollname)
             msgbody += 'Enrolled ' + studentemailaddress + ' in ' + coursetoenrollname + ' (' + coursecodetoenroll + ') \n'
             if configs['Debug'] == "True":
                 dmsgbody += 'Enrolled ' + studentemailaddress + ' in ' + coursetoenrollname + ' (' + coursecodetoenroll + ') \n'
