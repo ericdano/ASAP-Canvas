@@ -48,13 +48,13 @@ if configs['SendIntroLetters'] == "True":
     SentIntroLetters = pd.read_csv(Path(configs['IntroLetterPath']+configs['SentIntroLettersCSV']))
 #Funcction to email intro letter out to new Students
 #Looks for a CVS file of emails previously sent out to not send out the same letter again
-def emailintroletter():
+def emailintroletter(lettertoemail):
     global SentIntroLetters, msgbody, dmsgbody
     logging.info('Prepping to send intro letter from AE')
     IntroLetterRoot = MIMEMultipart('related')
     IntroLetterRoot['Subject'] = 'Acalanes Adult Education Spring/Summer 2021 Enrollment'
     IntroLetterRoot['From'] = configs['SMTPAddressFrom']
-    IntroLetterRoot['To'] = newenrolls['Person.Email'][i]
+    IntroLetterRoot['To'] = lettertoemail
     IntroLetterRoot.preamble = 'This is a multi-part message in MIME format.'
     IntroLetterAlt = MIMEMultipart('alternative')
     IntroLetterRoot.attach(IntroLetterAlt)
@@ -74,62 +74,63 @@ def emailintroletter():
     IntroLetterRoot.attach(IntroLetterImage)
     smtpintroletter = smtplib.SMTP()
     smtpintroletter.connect(configs['SMTPServerAddress'])
-    smtpintroletter.sendmail(configs['SMTPAddressFrom'], newenrolls['Person.Email'][i], IntroLetterRoot.as_string())
+    smtpintroletter.sendmail(configs['SMTPAddressFrom'], lettertoemail, IntroLetterRoot.as_string())
     smtpintroletter.quit()
-    SentIntroLetters = SentIntroLetters.append({'Email': newenrolls['Person.Email'][i]},ignore_index=True)
+    SentIntroLetters = SentIntroLetters.append({'Email': lettertoemail},ignore_index=True)
     SentIntroLetters.to_csv(Path(configs['IntroLetterPath']+configs['SentIntroLettersCSV']), index=False)
-    logging.info('Intro letter sent to ' + newenrolls['Person.Email'][i])
+    logging.info('Intro letter sent to ' + lettertoemail)
     if configs['Debug'] == "True":
-        dmsgbody = dmsgbody + 'Added ' + newenrolls['Person.Email'][i] + 'to sent CSV file.\n'
-        dmsgbody = dmsgbody + 'Sent intro letter to ' + newenrolls['Person.Email'][i] + '\n'
-    msgbody = msgbody + 'Sent intro letter to ' + newenrolls['Person.Email'][i] + '\n'
+        dmsgbody = dmsgbody + 'Added ' + lettertoemail + 'to sent CSV file.\n'
+        dmsgbody = dmsgbody + 'Sent intro letter to ' + lettertoemail + '\n'
+    msgbody = msgbody + 'Sent intro letter to ' + lettertoemail + '\n'
 
 #Function to enroll or unenroll a student
-def enrollstudent():
+def enrollstudent(coursecodetoenroll,coursetoenrollname,enrollmentstatuscd,studentemailaddress):
+    #get passed course, coursename, enrollmentstatus,and studentemailaddress
     global msgbody, dmsgbody
+    # the globals are for the end email messages
     if configs['Debug'] == "True":
-        logging.info('Looking at ' + newenrolls['Person.Email'][i] + ' enrollment status for ID ' +  newenrolls['ScheduledEvent.EventCd'][i])
-        dmsgbody = dmsgbody + 'Looking at ' + newenrolls['Person.Email'][i] + ' enrollment status for ID ' +  newenrolls['ScheduledEvent.EventCd'][i] + '\n'
+        logging.info('Looking at ' + studentemailaddress + ' enrollment status for ID ' +  coursecodetoenroll)
+        dmsgbody = dmsgbody + 'Looking at ' + studentemailaddress + ' enrollment status for ID ' +  coursecodetoenroll + '\n'
     logging.info('Found user - look at enrollments')
-    coursetoenroll = newenrolls['ScheduledEvent.EventCd'][i]
     try:
-        course = canvas.get_course(coursetoenroll,'sis_course_id')
-        logging.info('EnrollmentStatusCd field is ' + newenrolls['EnrollmentStatusCd'][i])
+        course = canvas.get_course(coursecodetoenroll,'sis_course_id')
+        logging.info('EnrollmentStatusCd field is ' + enrollmentstatuscd)
         if configs['Debug'] == 'True':
-            dmsgbody = dmsgbody + 'Field is ' + newenrolls['EnrollmentStatusCd'][i] + '\n'
-        if newenrolls['EnrollmentStatusCd'][i] == "DROPPED":
-            logging.info('Dropping ' + newenrolls['Person.Email'][i])
+            dmsgbody = dmsgbody + 'Field is ' + enrollmentstatuscd + '\n'
+        if enrollmentstatuscd == "DROPPED":
+            logging.info('Dropping ' + studentemailaddress)
             if configs['Debug'] == 'True':
-                dmsgbody = dmsgbody + 'Dropping ' + newenrolls['Person.Email'][i] +'\n'
+                dmsgbody = dmsgbody + 'Dropping ' + studentemailaddress +'\n'
             enrollments = course.get_enrollments(type='StudentEnrollment')
             for stu in enrollments:
                 # You have to loop through all the enrollments for the class and then find the student id in the enrollment then tell it to delete it.
                 if stu.user_id == user.id:
                     stu.deactivate(task='delete')
-                    logging.info('Deleted student from ' + newenrolls['ScheduledEvent.Course.CourseName'][i])
-                    msgbody = msgbody + 'Dropped ' + newenrolls['Person.Email'][i] + ' from ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + '\n'
+                    logging.info('Deleted student from ' + coursetoenrollname)
+                    msgbody = msgbody + 'Dropped ' + studentemailaddress + ' from ' + coursetoenrollname + '\n'
                     if configs['Debug'] == "True":
-                        dmsgbody = dmsgbody + 'Dropped ' + newenrolls['Person.Email'][i] + ' from ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + '\n'
+                        dmsgbody = dmsgbody + 'Dropped ' + studentemailaddress + ' from ' + coursetoenrollname + '\n'
         else:
             # Other ASAP things could be PEND or ENROLLED.
             enrollment = course.enroll_user(user,"StudentEnrollment",
                                             enrollment = {
-                                                "sis_course_id": coursetoenroll,
+                                                "sis_course_id": coursecodetoenroll,
                                                 "notify": True,
                                                 "enrollment_state": "active"
                                                 }
                                             )
-            logging.info('Enrolled ' + newenrolls['Person.Email'][i] + ' in ' + newenrolls['ScheduledEvent.Course.CourseName'][i])
-            msgbody = msgbody + 'Enrolled ' + newenrolls['Person.Email'][i] + ' in ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + '\n'
+            logging.info('Enrolled ' + studentemailaddress + ' in ' + coursetoenrollname
+            msgbody = msgbody + 'Enrolled ' + studentemailaddress + ' in ' + coursetoenrollname + '\n'
             if configs['Debug'] == "True":
-                dmsgbody = dmsgbody + 'Enrolled ' + newenrolls['Person.Email'][i] + ' in ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + '\n'
+                dmsgbody = dmsgbody + 'Enrolled ' + studentemailaddress + ' in ' + coursetoenrollname + '\n'
     except CanvasException as ec:
                 #It all starts with figuring out if the user is in Canvas and enroll in tutorial course
-        logging.info('Canvas error ' + str(ec) + ' Course code ' + newenrolls['ScheduledEvent.EventCd'][i] + ' - ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + ' is not in Canvas. Stopping imports. ')
-        print('Canvas error ' + str(ec) + ' Course code ' + newenrolls['ScheduledEvent.EventCd'][i] + ' - ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + ' is not in Canvas. Stopping imports.')
+        logging.info('Canvas error ' + str(ec) + ' Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports. ')
+        print('Canvas error ' + str(ec) + ' Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports.')
         s = smtplib.SMTP(configs['SMTPServerAddress'])
-        msgbody = msgbody + 'Course code ' + newenrolls['ScheduledEvent.EventCd'][i] + ' - ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + ' is not in Canvas. Stopping imports.\n\n\nPanic!!!\n'
-        dmsgbody = dmsgbody + 'Course code ' + newenrolls['ScheduledEvent.EventCd'][i] + ' - ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + ' is not in Canvas. Stopping imports.\n\n\nPanic!!!\n'
+        msgbody = msgbody + 'Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports.\n\n\nPanic!!!\n'
+        dmsgbody = dmsgbody + 'Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports.\n\n\nPanic!!!\n'
         msg.set_content(msgbody)
         s.send_message(msg)
         raise
@@ -216,12 +217,17 @@ elif r.status_code == 200:
                 if configs['Debug'] == "True":
                     dmsgbody = dmsgbody + newenrolls['Person.Email'][i] + ' is in Canvas\n'
                 if configs['SendIntroLetters'] == "True":
+                    # Check to see if we are sending welcome emails to this semester's students. Purely optional
                     logging.info("Looking if we have sent intro letter to person...")
                     senttheletter = SentIntroLetters[SentIntroLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
                     if senttheletter.empty:
                         logging.info("Going to send intro letter....")
-                        emailintroletter()
-                enrollstudent()
+                        #pass email to send optional enrollment welcome letter
+                        emailintroletter(newenrolls['Person.Email'][i])
+                enrollstudent(newenrolls['ScheduledEvent.EventCd'][i],
+                    newenrolls['ScheduledEvent.Course.CourseName'][i],
+                    newenrolls['EnrollmentStatusCd'][i],
+                    newenrolls['Person.Email'][i])
             except CanvasException as e:
             #It all starts with figuring out if the user is in Canvas and enroll in tutorial course
                 if str(e) == "Not Found":
@@ -271,9 +277,12 @@ elif r.status_code == 200:
                         senttheletter = SentIntroLetters[SentIntroLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
                         if senttheletter.empty:
                             logging.info("Going to send intro letter....")
-                            emailintroletter()
+                            emailintroletter(newenrolls['Person.Email'][i])
                     #after doing the letters, then enroll the student
-                    enrollstudent()
+                    enrollstudent(newenrolls['ScheduledEvent.EventCd'][i],
+                        newenrolls['ScheduledEvent.Course.CourseName'][i],
+                        newenrolls['EnrollmentStatusCd'][i],
+                        newenrolls['Person.Email'][i])
         else:
             logging.info('Found course in Skip List. Course Code-> ' + newenrolls['ScheduledEvent.EventCd'][i])
             if configs['Debug'] == "True":
