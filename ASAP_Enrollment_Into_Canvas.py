@@ -121,9 +121,9 @@ def enrollstudent(coursecodetoenroll,coursetoenrollname,enrollmentstatuscd,stude
                                                 }
                                             )
             logging.info('Enrolled ' + studentemailaddress + ' in ' + coursetoenrollname
-            msgbody = msgbody + 'Enrolled ' + studentemailaddress + ' in ' + coursetoenrollname + '(' + coursecodetoenroll + ')\n'
+            msgbody += 'Enrolled ' + studentemailaddress + ' in ' + coursetoenrollname + ' (' + coursecodetoenroll + ') \n'
             if configs['Debug'] == "True":
-                dmsgbody = dmsgbody + 'Enrolled ' + studentemailaddress + ' in ' + coursetoenrollname + '(' + coursecodetoenroll + ')\n'
+                dmsgbody += 'Enrolled ' + studentemailaddress + ' in ' + coursetoenrollname + ' (' + coursecodetoenroll + ') \n'
     except CanvasException as ec:
                 #It all starts with figuring out if the user is in Canvas and enroll in tutorial course
         logging.info('Canvas error ' + str(ec) + ' Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports. ')
