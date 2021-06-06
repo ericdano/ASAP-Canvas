@@ -80,9 +80,9 @@ def emailintroletter(lettertoemail):
     SentIntroLetters.to_csv(Path(configs['IntroLetterPath']+configs['SentIntroLettersCSV']), index=False)
     logging.info('Intro letter sent to ' + lettertoemail)
     if configs['Debug'] == "True":
-        dmsgbody = dmsgbody + 'Added ' + lettertoemail + 'to sent CSV file.\n'
-        dmsgbody = dmsgbody + 'Sent intro letter to ' + lettertoemail + '\n'
-    msgbody = msgbody + 'Sent intro letter to ' + lettertoemail + '\n'
+        dmsgbody += 'Added ' + lettertoemail + 'to sent CSV file.\n'
+        dmsgbody += 'Sent intro letter to ' + lettertoemail + '\n'
+    msgbody += 'Sent intro letter to ' + lettertoemail + '\n'
 
 #Function to enroll or unenroll a student
 def enrollstudent(coursecodetoenroll,coursetoenrollname,enrollmentstatuscd,studentemailaddress):
@@ -91,26 +91,26 @@ def enrollstudent(coursecodetoenroll,coursetoenrollname,enrollmentstatuscd,stude
     # the globals are for the end email messages
     if configs['Debug'] == "True":
         logging.info('Looking at ' + studentemailaddress + ' enrollment status for ID ' +  coursecodetoenroll)
-        dmsgbody = dmsgbody + 'Looking at ' + studentemailaddress + ' enrollment status for ID ' +  coursecodetoenroll + '\n'
+        dmsgbody += 'Looking at ' + studentemailaddress + ' enrollment status for ID ' +  coursecodetoenroll + '\n'
     logging.info('Found user - look at enrollments')
     try:
         course = canvas.get_course(coursecodetoenroll,'sis_course_id')
         logging.info('EnrollmentStatusCd field is ' + enrollmentstatuscd)
         if configs['Debug'] == 'True':
-            dmsgbody = dmsgbody + 'Field is ' + enrollmentstatuscd + '\n'
+            dmsgbody += 'Field is ' + enrollmentstatuscd + '\n'
         if enrollmentstatuscd == "DROPPED":
             logging.info('Dropping ' + studentemailaddress)
             if configs['Debug'] == 'True':
-                dmsgbody = dmsgbody + 'Dropping ' + studentemailaddress +'\n'
+                dmsgbody += 'Dropping ' + studentemailaddress +'\n'
             enrollments = course.get_enrollments(type='StudentEnrollment')
             for stu in enrollments:
                 # You have to loop through all the enrollments for the class and then find the student id in the enrollment then tell it to delete it.
                 if stu.user_id == user.id:
                     stu.deactivate(task='delete')
                     logging.info('Deleted student from ' + coursetoenrollname)
-                    msgbody = msgbody + 'Dropped ' + studentemailaddress + ' from ' + coursetoenrollname + '\n'
+                    msgbody += 'Dropped ' + studentemailaddress + ' from ' + coursetoenrollname + '\n'
                     if configs['Debug'] == "True":
-                        dmsgbody = dmsgbody + 'Dropped ' + studentemailaddress + ' from ' + coursetoenrollname + '\n'
+                        dmsgbody += 'Dropped ' + studentemailaddress + ' from ' + coursetoenrollname + '\n'
         else:
             # Other ASAP things could be PEND or ENROLLED.
             enrollment = course.enroll_user(user,"StudentEnrollment",
@@ -129,8 +129,8 @@ def enrollstudent(coursecodetoenroll,coursetoenrollname,enrollmentstatuscd,stude
         logging.info('Canvas error ' + str(ec) + ' Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports. ')
         print('Canvas error ' + str(ec) + ' Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports.')
         s = smtplib.SMTP(configs['SMTPServerAddress'])
-        msgbody = msgbody + 'Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports.\n\n\nPanic!!!\n'
-        dmsgbody = dmsgbody + 'Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports.\n\n\nPanic!!!\n'
+        msgbody += 'Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports.\n\n\nPanic!!!\n'
+        dmsgbody += 'Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports.\n\n\nPanic!!!\n'
         msg.set_content(msgbody)
         s.send_message(msg)
         raise
@@ -148,18 +148,18 @@ if r.status_code == 404:
     if configs['Debug'] == "True":
         print('Failed to connect to ASAP')
         logging.info('Failed to get ASAP Key')
-        dmsgbody = dmsgbody + 'Failed to get ASAP Key....\n'
+        dmsgbody += 'Failed to get ASAP Key....\n'
 elif r.status_code == 200:
     logging.info('Got ASAP Key')
     if configs['Debug'] == "True":
-        dmsgbody = dmsgbody + 'Got ASAP Key....\n'
+        dmsgbody += 'Got ASAP Key....\n'
     accesstoken = r.json()
     logging.info('Key is ' + accesstoken)
     url2 = configs['ASAPapiurl']
     header = {'asap_accesstoken' : accesstoken}
     logging.info('Getting data from ASAP')
     if configs['Debug'] == "True":
-        dmsgbody = dmsgbody + 'Getting JSON from ASAP....\n'
+        dmsgbody += 'Getting JSON from ASAP....\n'
     r2 = requests.get(url2,headers = header)
     results = pd.concat([pd.json_normalize(r2.json()), pd.json_normalize(r2.json(),record_path="Students", max_level=2)], axis=1).drop('Students',1)
     #Drop columns we don't need
@@ -195,19 +195,19 @@ elif r.status_code == 200:
     # Load last record processed
     logging.info('Connecting to Canvas')
     if configs['Debug'] == "True":
-        dmsgbody = dmsgbody + 'Connecting to Canvas....\n'
+        dmsgbody += 'Connecting to Canvas....\n'
     canvas = Canvas(Canvas_API_URL, Canvas_API_KEY)
     account = canvas.get_account(1)
     logging.info('Getting last record we looked at')
     if configs['Debug'] == "True":
-        dmsgbody = dmsgbody + 'Loading last record processed....\n'
+        dmsgbody += 'Loading last record processed....\n'
     #load starting record position
     lastrunplace = pd.read_csv(lastrunplacefilename)
     logging.info('Last place was ' + str(lastrunplace))
     newenrolls = results[results['EventEnrollmentID'] > lastrunplace['EventEnrollmentID'][0]]
     logging.info("Looking for enrollments")
     if configs['Debug'] == "True":
-        dmsgbody = dmsgbody + "Looking for enrollments....\n"
+        dmsgbody += "Looking for enrollments....\n"
     for i in newenrolls.index:
         #Look for classes we don't do canvas for, and skip
         if not newenrolls['ScheduledEvent.EventCd'][i] in configs['SkipCourses']:
@@ -215,7 +215,7 @@ elif r.status_code == 200:
                 user = canvas.get_user(newenrolls['Person.Email'][i],'sis_login_id')
                 logging.info(newenrolls['Person.Email'][i] + " is in Canvas")
                 if configs['Debug'] == "True":
-                    dmsgbody = dmsgbody + newenrolls['Person.Email'][i] + ' is in Canvas\n'
+                    dmsgbody += newenrolls['Person.Email'][i] + ' is in Canvas\n'
                 if configs['SendIntroLetters'] == "True":
                     # Check to see if we are sending welcome emails to this semester's students. Purely optional
                     logging.info("Looking if we have sent intro letter to person...")
@@ -233,7 +233,7 @@ elif r.status_code == 200:
                 if str(e) == "Not Found":
                     if configs['Debug'] == "True":
                         print('Creating ' + newenrolls['Person.Email'][i])
-                        dmsgbody = dmsgbody + 'Creating ' + newenrolls['Person.Email'][i] + ' in Canvas\n'
+                        dmsgbody += 'Creating ' + newenrolls['Person.Email'][i] + ' in Canvas\n'
                     logging.info('User not found, creating')
                     newusername = newenrolls['Person.FirstName'][i] + " " + newenrolls['Person.LastName'][i]
                     sis_user_id = newenrolls['CustomerID'][i]
@@ -259,7 +259,7 @@ elif r.status_code == 200:
                     if configs['NewUserCourse'] != '':
                         logging.info('Enrolling new user into intro student Canvas course')
                         if configs['Debug'] == "True":
-                            dmsgbody = dmsgbody + 'Enrolling ' + newenrolls['Person.Email'][i] + ' into intro student Canvas course\n'
+                            dmsgbody += 'Enrolling ' + newenrolls['Person.Email'][i] + ' into intro student Canvas course\n'
                         coursetoenroll = configs['NewUserCourse']
                         course = canvas.get_course(coursetoenroll,'sis_course_id')
                         enrollment = course.enroll_user(user,"StudentEnrollment",
@@ -269,8 +269,8 @@ elif r.status_code == 200:
                                                             "enrollment_state": "active"
                                                             }
                                                         )
-                        msgbody = msgbody + 'Enrolled ' + emailaddr + ' for ' + newusername + ' in the Intro to Canvas course\n'
-                        dmsgbody = dmsgbody + 'Enrolled ' + emailaddr + ' for ' + newusername + ' in the Intro to Canvas course\n'
+                        msgbody += 'Enrolled ' + emailaddr + ' for ' + newusername + ' in the Intro to Canvas course\n'
+                        dmsgbody += 'Enrolled ' + emailaddr + ' for ' + newusername + ' in the Intro to Canvas course\n'
                     # Look in config to see that you want to send an intro letter to people this session
                     if configs['SendIntroLetters'] == "True":
                         logging.info("Looking if we have sent intro letter to person...")
@@ -286,8 +286,8 @@ elif r.status_code == 200:
         else:
             logging.info('Found course in Skip List. Course Code-> ' + newenrolls['ScheduledEvent.EventCd'][i])
             if configs['Debug'] == "True":
-                dmsgbody = dmsgbody + 'Skipping enrollment for ' + newenrolls['Person.Email'][i] + ', found course code ' + newenrolls['ScheduledEvent.EventCd'][i] + ' ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + ' in the skip list.\n'
-            skippedbody = skippedbody + 'Skipping enrollment for ' + newenrolls['Person.Email'][i] + ', found course code ' + newenrolls['ScheduledEvent.EventCd'][i] + ' ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + ' in the skip list.\n'
+                dmsgbody += 'Skipping enrollment for ' + newenrolls['Person.Email'][i] + ', found course code ' + newenrolls['ScheduledEvent.EventCd'][i] + ' ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + ' in the skip list.\n'
+            skippedbody += 'Skipping enrollment for ' + newenrolls['Person.Email'][i] + ', found course code ' + newenrolls['ScheduledEvent.EventCd'][i] + ' ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + ' in the skip list.\n'
     # Send event email to interested admins on new enrolls or drops
     s = smtplib.SMTP(configs['SMTPServerAddress'])
     if msgbody == '':
@@ -305,11 +305,11 @@ elif r.status_code == 200:
         lastrec = newenrolls.tail(1)
         lastrec.to_csv(lastrunplacefilename)
         if skippedbody == '':
-            msgbody = msgbody + '\n\nHappy Mickey\n'
+            msgbody += '\n\nHappy Mickey\n'
         else:
-            msgbody = msgbody + '\n\nSkipped enrolling these as course codes were in skip list:\n\n' + skippedbody + '\n\nHappy Mickey\n'
-            dmsgbody = dmsgbody + '\n\nSkipped enrolling these as course codes were in skip list:\n\n' + skippedbody + '\n'
-        dmsgbody = dmsgbody + 'wrote NEW last record to file'
+            msgbody += '\n\nSkipped enrolling these as course codes were in skip list:\n\n' + skippedbody + '\n\nHappy Mickey\n'
+            dmsgbody += '\n\nSkipped enrolling these as course codes were in skip list:\n\n' + skippedbody + '\n'
+        dmsgbody += 'wrote NEW last record to file'
     msg.set_content(msgbody)
     s.send_message(msg)
 if configs['Debug'] == "True":
