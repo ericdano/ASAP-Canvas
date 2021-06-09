@@ -29,9 +29,9 @@ for i in courses:
                'sistermid':i.term['sis_term_id'],
                'newcoursename':'Winter 2021 - ' + i.name}, ignore_index=True)
 for index, row in df.iterrows():
-    if row["sistermid"]=="FALL2020":
+    if row["sistermid"]=="WINT2021":
         print("Updating term->",row["sistermid"]," courseid:",row["courseid"],"->",row["coursename"]," to ",row["newcoursename"])
         newname = row["newcoursename"]
-        cid = row["courseid"]
-        course = canvas.get_course(cid)
-        course.update(course={'name': newname})
+        #cid = row["courseid"]
+        #course = canvas.get_course(cid)
+        #course.update(course={'name': newname})
