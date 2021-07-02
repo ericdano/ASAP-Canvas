@@ -62,6 +62,8 @@ for index, row in df.iterrows():
           logging.info('Updating term->' + row["sistermid"] + ' courseid:' + row["courseid"] + '->' + row["coursename"] + ' to ' + row["newcoursename"])
           newname = row["newcoursename"]
           cid = row["courseid"]
-          # uncomment the next two lines to make ACTUAL changes to your Canvas
+          #------------------
+          # uncomment the next two lines at the BOTTOM to make ACTUAL changes to your Canvas
+          #---------------------------
           #course = canvas.get_course(cid)
           #course.update(course={'name': newname})
