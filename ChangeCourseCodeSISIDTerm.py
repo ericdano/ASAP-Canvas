@@ -20,22 +20,32 @@ account = canvas.get_account(1)
 column_names = ["courseid","coursename","sistermid","newcoursename","newsisid","newcoursecode"]
 df = pd.DataFrame(columns = column_names)
 courses=account.get_courses(include=['term','sis_term_id'])
-for i in courses:
-    print(i.id)
-    print(i.name)
-    print(i.term['sis_term_id'])
-    df = df.append({'courseid':i.id,
-               'coursename':i.name,
-               'sistermid':i.term['sis_term_id'],
-               'newcoursename':'Spring 2021 - ' + i.name,
-               'sis_course_id':i.term['sis_course_id'] + 'F20',
-               'course_code':i.term['course_code'] + 'F20'},
-               ignore_index=True)
-for index, row in df.iterrows():
-    if row["sistermid"]=="SPR2021":
-        print("Updating term->",row["sistermid"]," courseid:",row["courseid"],"->",row["coursename"]," to ",row["newcoursename"])
-        print("Changing SIS from ->",row["newsisid"], row["newcoursecode"])
-        newname = row["newcoursename"]
-        cid = row["courseid"]
-        #course = canvas.get_course(cid)
-        #course.update(course={'name': newname})
+for course in courses:
+  print(course.name)
+  print(course.sis_course_id)
+  print(course.term)
+  if course.term == "FALL2020":
+    if course.sis_course_id == "057429":
+      print("found it")
+      #changeit = canvas.get_course(id)
+      #changeit.update(changeit={'course_code':changeit})
+  
+
+#for i in courses:
+#    df = df.append({'courseid':i.id,
+##               'coursename':i.name,
+#               'sistermid':i.term['sis_term_id'],
+#               'newcoursename':'Spring 2021 - ' + i.name}, ignore_index=True)
+#for index, row in df.iterrows():
+#    if row["sistermid"]=="FALL2020":
+        #print("Updating term->",row["sistermid"]," courseid:",row["courseid"],"->",row["coursename"]," to ",row["newcoursename"])
+#        print("Changing SIS from ->",row["newsisid"], row["newcoursecode"])
+#        cid = row["courseid"]
+#        course = canvas.get_course(cid,'sis_course_id')
+#        print(course.sis_course_id)
+#        print(course.course_code)
+
+          #course.update(course={'course_code': cid + "F20"})
+          #course.update(course={'sis_course_id': cid + "F20"})
+
+  
