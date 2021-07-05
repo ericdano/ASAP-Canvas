@@ -5,6 +5,10 @@ import pandas as pd
 from pathlib import Path
 import requests, json, logging, smtplib, datetime, sys
 
+#
+# ----- Script moved over to RollOver_Classes.py
+# ----- To be deleted after 7/4/2021
+#
 # Script to rename classes in Canvas that are from the previous term
 # We generally are keeping all previous classes in our Canvas rather than deleting them
 # However, it is confusing for the teachers to have like 5 ESL Morning classes from different terms in their dashboard
