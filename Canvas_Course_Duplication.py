@@ -66,6 +66,7 @@ account = canvas.get_account(1)
 terms = account.get_enrollment_terms()
 term_id = 0
 for term in terms:
+    print('Looking for term->',CurrentCanvasTerm)
     if term.name == CurrentCanvasTerm:
         logging.info('Found Term ID')
         term_id = term.id
@@ -75,6 +76,7 @@ for term in terms:
 if term_id == 0:
     print('Term ID is still 0, stopping program.')
     dmsgbody=dmsgbody+'Did not find Term in Canvas. Aborted program.'
+    exit(0)
 else:
     logging.info('Loading CSV file to process')
     if configs['Debug'] == "True":
@@ -107,8 +109,8 @@ else:
                 print(newCourse)
                 dmsgbody = dmsgbody + 'created course ' + asapcoursestocopy['NewSIS_ID'][i] + ' in Canvas\n'
                 copy_to_new_course()
-s = smtplib.SMTP(configs['SMTPServerAddress'])
-if configs['Debug'] == "True":
-    print("All done!")
-    dmsg.set_content(dmsgbody)
-    s.send_message(dmsg)
+#s = smtplib.SMTP(configs['SMTPServerAddress'])
+#if configs['Debug'] == "True":
+#    print("All done!")
+#    dmsg.set_content(dmsgbody)
+#    s.send_message(dmsg)
