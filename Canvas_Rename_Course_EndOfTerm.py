@@ -53,21 +53,23 @@ column_names = ["courseid","coursename","sistermid","newcoursename"]
 df = pd.DataFrame(columns = column_names)
 courses=account.get_courses(include=['term','sis_term_id'])
 for i in courses:
-    #print(i.id)
-    #print(i.name)
-    #print(i.term['sis_term_id'])
-    df = df.append({'courseid':i.id,
+    print(i.id," ",i.name," ",i.term['sis_term_id'])
+    if i.term['sis_term_id'] == termidlookingfor:
+        df = df.append({'courseid':i.id,
                'coursename':i.name,
                'sistermid':i.term['sis_term_id'],
                'newcoursename':prependname + i.name}, ignore_index=True)
 for index, row in df.iterrows():
-    if row["sistermid"]==termidlookingfor:
-          print("Updating term->",row["sistermid"]," courseid:",row["courseid"],"->",row["coursename"]," to ",row["newcoursename"])
-          logging.info('Updating term->' + row["sistermid"] + ' courseid:' + row["courseid"] + '->' + row["coursename"] + ' to ' + row["newcoursename"])
-          newname = row["newcoursename"]
-          cid = row["courseid"]
+    #if row["sistermid"]==termidlookingfor:
+    print("Updating term->",row["sistermid"]," courseid:",row["courseid"],"->",row["coursename"]," to ",row["newcoursename"])
+    logging.info('Updating term->' + row["sistermid"] + ' courseid:' + str(row["courseid"]) + '->' + row["coursename"] + ' to ' + row["newcoursename"])
+    newname = row["newcoursename"]
+    cid = row["courseid"]
           #------------------
           # uncomment the next two lines at the BOTTOM to make ACTUAL changes to your Canvas
           #---------------------------
           #course = canvas.get_course(cid)
           #course.update(course={'name': newname})
+for j in df:
+    c = canvas.get_course(j.courseid)
+    print(c.course_code,' ',c.sis_course_id)
