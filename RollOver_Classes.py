@@ -2,7 +2,7 @@
 from canvasapi import Canvas
 import pandas as pd
 from pathlib import Path
-import requests, json, logging, smtplib, datetime
+import requests, json, logging, smtplib, datetime, sys
 
 # This script replaces two scripts. One that was called Rename Course End of Term
 #
@@ -13,8 +13,9 @@ import requests, json, logging, smtplib, datetime
 
 home = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
 confighome = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
-with open(confighome) as f:
-  configs = json.load(f)
+try:
+    with open(confighome) as f:
+        configs = json.load(f)
 except EnvironmentError:
     print('Config file not found. Check to make sure there is a .ASAPCanvas folder in your home directory with a ASAPCanvas.json file in that folder.')
     raise
@@ -22,12 +23,15 @@ except EnvironmentError:
 logfilename = Path.home() / ".ASAPCanvas" / configs['logfilename']
 logging.basicConfig(filename=str(logfilename), level=logging.INFO)
 logging.info('Loaded config file and logfile started -- RollOverClasses.py')
-if len(sys.argv) < 4:
-      print('You must run with TWO arguments, enclosed with quotes. Refer to documentation in script')
+if len(sys.argv) < 5:
+      print('You must run with FOUR arguments, enclosed with quotes. Refer to documentation in script')
+      print("Example->python3 RollOver_Classes.py 'SUM2021' 'SUM21' 'Summer 2021' 'DOIT'")
+      print('Last Arg DOIT will actually do the rollover. All other time it will just be a test run. ie no Canvas data updated.')
       sys.exit()
 termidlookingfor = sys.argv[1]
 prependccstr = sys.argv[2]
 prependnamestr = sys.argv[3]
+shouldwedoit = sys.argv[4]
 #-----Canvas Info
 Canvas_API_URL = configs['CanvasAPIURL']
 Canvas_API_KEY = configs['CanvasAPIKey']
@@ -39,18 +43,16 @@ df = pd.DataFrame(columns = column_names)
 courses=account.get_courses(include=['term','sis_term_id'])
 for course in courses:
   if course.term['sis_term_id'] == termidlookingfor:
-#    print(course.name)
-#    print(course.sis_course_id)
-#    print(course.term)
-    print("found it")
     new_sis_id = course.sis_course_id + prependccstr
-    #print(new_sis_id)
-    #print(course.sis_course_id)
-    print("Updating term->",termidlookingfor," courseid:",course.sis_course_id," to ", course.sis_course_id, prependccstr, " and ",course.name," to ",course.name,prependnamestr)
-    logging.info('Updating term->' + termidlookingfor + ' courseid:' + course.sis_course_id + ' to ' + course.sis_course_id + prependccstr + ' and ' + course.name + ' to ' + course.name + prependnamestr)
-    course.update(course={'course_code':new_sis_id,
-                          'sis_course_id':new_sis_id,
-                          'name':prependnamestr})
+    new_course_name = prependnamestr + course.name
+    print("Updating term->",termidlookingfor," courseid:",course.sis_course_id," to ", new_sis_id, " sis_id: ", course.sis_course_id, " to ", new_sis_id, " and ",course.name," to ",new_course_name)
+    logging.info('Updating term->' + termidlookingfor + ' sis_course_id:' + course.sis_course_id + ' to ' + new_sis_id + ' course_code:' + course.course_code + ' to ' + new_sis_id + ' and ' + course.name + ' to ' + new_course_name)
+    if shouldwedoit == 'DOIT':
+      course.update(course={'course_code':new_sis_id,
+                            'sis_course_id':new_sis_id,
+                            'name':new_course_name})
+      print('Updated Canvas course')
+      logging.info('Updated Canvas')
 logging.info('Done -- RollOver_classes.py')
-Print('Done!')
+print('Done!')
   
