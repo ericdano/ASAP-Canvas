@@ -46,6 +46,41 @@ dmsgbody = ''
 if configs['SendIntroLetters'] == "True":
     logging.info('Reading Previous Sent Intro Letters file')
     SentIntroLetters = pd.read_csv(Path(configs['IntroLetterPath']+configs['SentIntroLettersCSV']))
+if configs['SendCOVIDLetters'] == "True":
+    logging.info('Reading Previous Sent COVID Letters file')
+    SentCOVIDLetters = pd.read_csv(Path(configs['COVIDLetterPath']+configs['SentCOVIDLettersCSV']))
+#Funcction to email COVID vaccine status
+#Looks for a CVS file of emails previously sent out to not send out the same letter again
+def emailCOVIDletter(lettertoemail):
+    global SentCOVIDLetters, msgbody, dmsgbody
+    logging.info('Prepping to send COVID letter from AE')
+    IntroLetterRoot = MIMEMultipart('related')
+    IntroLetterRoot['Subject'] = 'Voluntary Vaccination Verification'
+    IntroLetterRoot['From'] = configs['SMTPAddressFrom']
+    IntroLetterRoot['To'] = lettertoemail
+    IntroLetterRoot.preamble = 'This is a multi-part message in MIME format.'
+    IntroLetterAlt = MIMEMultipart('alternative')
+    IntroLetterRoot.attach(IntroLetterAlt)
+    IntroLetterText = MIMEText('This is the alternative plain text message.')
+    IntroLetterAlt.attach(IntroLetterText)
+    logging.info('Reading Previous Sent COVID Letters file')
+    messagepath = Path(configs['COVIDLetterPath']+configs['COVIDLetterFile'])
+    introfp1 = open(messagepath,'r')
+    IntroLetterText = MIMEText(introfp1.read(),'html')
+    IntroLetterAlt.attach(IntroLetterText)
+    introfp1.close()
+    smtpintroletter = smtplib.SMTP()
+    smtpintroletter.connect(configs['SMTPServerAddress'])
+    smtpintroletter.sendmail(configs['SMTPAddressFrom'], lettertoemail, IntroLetterRoot.as_string())
+    smtpintroletter.quit()
+    SentCOVIDLetters = SentCOVIDLetters.append({'Email': lettertoemail},ignore_index=True)
+    SentCOVIDLetters.to_csv(Path(configs['COVIDLetterPath']+configs['SentCOVIDLettersCSV']), index=False)
+    logging.info('COVID letter sent to ' + lettertoemail)
+    if configs['Debug'] == "True":
+        dmsgbody += 'Added ' + lettertoemail + 'to sent COVID CSV file.\n'
+        dmsgbody += 'Sent COVID letter to ' + lettertoemail + '\n'
+    msgbody += 'Sent COVID letter to ' + lettertoemail + '\n'
+
 #Funcction to email intro letter out to new Students
 #Looks for a CVS file of emails previously sent out to not send out the same letter again
 def emailintroletter(lettertoemail):
@@ -216,14 +251,23 @@ elif r.status_code == 200:
                 logging.info(newenrolls['Person.Email'][i] + " is in Canvas")
                 if configs['Debug'] == "True":
                     dmsgbody += newenrolls['Person.Email'][i] + ' is in Canvas\n'
+                # Check to see if we are sending welcome emails to this semester's students. Purely optional
                 if configs['SendIntroLetters'] == "True":
-                    # Check to see if we are sending welcome emails to this semester's students. Purely optional
                     logging.info("Looking if we have sent intro letter to person...")
                     senttheletter = SentIntroLetters[SentIntroLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
                     if senttheletter.empty:
                         logging.info("Going to send intro letter....")
                         #pass email to send optional enrollment welcome letter
                         emailintroletter(newenrolls['Person.Email'][i])
+                # Check to see if we are sending out COVID vaccinated status emails
+                if configs['SendCOVIDLetters'] == "True":
+                    # Check to see if we are sending welcome emails to this semester's students. Purely optional
+                    logging.info("Looking if we have sent COVID letter to person...")
+                    senttheCletter = SentCOVIDLetters[SentCOVIDLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
+                    if senttheCletter.empty:
+                        logging.info("Going to send COVID letter....")
+                        #pass email to send optional enrollment welcome letter
+                        emailCOVIDletter(newenrolls['Person.Email'][i])
                 enrollstudent(newenrolls['ScheduledEvent.EventCd'][i],
                     newenrolls['ScheduledEvent.Course.CourseName'][i],
                     newenrolls['EnrollmentStatusCd'][i],
@@ -279,6 +323,15 @@ elif r.status_code == 200:
                             logging.info("Going to send intro letter....")
                             emailintroletter(newenrolls['Person.Email'][i])
                     #after doing the letters, then enroll the student
+
+                    if configs['SendCOVIDLetters'] == "True":
+                    # Check to see if we are sending welcome emails to this semester's students. Purely optional
+                        logging.info("Looking if we have sent COVID letter to person...")
+                        senttheCletter = SentCOVIDLetters[SentCOVIDLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
+                        if senttheCletter.empty:
+                            logging.info("Going to send COVID letter....")
+                            #pass email to send optional enrollment welcome letter
+                            emailCOVIDletter(newenrolls['Person.Email'][i])
                     enrollstudent(newenrolls['ScheduledEvent.EventCd'][i],
                         newenrolls['ScheduledEvent.Course.CourseName'][i],
                         newenrolls['EnrollmentStatusCd'][i],
