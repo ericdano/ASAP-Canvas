@@ -4,10 +4,10 @@ from canvasapi import Canvas
 from canvasapi.exceptions import CanvasException
 from pathlib import Path
 #
-# Quick and easy way to enroll a teacher as teacher in a class.
-# python Canvas_Enroll_Teacher_In_Course.py 22222 me@institute.com
+# This will enroll a user into ALL classes in Canvas as a TA for a term
+# args ->python Enroll_User_As_TA_ALL_Classes.py 'Fall 2021' me@me.com
 #
-coursesisid = sys.argv[1]
+termidlookingfor = sys.argv[1]
 teacheremail = sys.argv[2]
 #load configs
 home = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
@@ -20,21 +20,34 @@ Canvas_API_KEY = configs['CanvasAPIKey']
 #prep status (msg) and debug (dmsg) emails
 canvas = Canvas(Canvas_API_URL, Canvas_API_KEY)
 account = canvas.get_account(1)
-#Function to Copy Course
-print(coursesisid)
+column_names = ["courseid","course_sis_id","coursename"]
+df = pd.DataFrame(columns = column_names)
 print(teacheremail)
-try:
-    asapclass = canvas.get_course(coursesisid,use_sis_id=True)
+courses=account.get_courses(include=['term','sis_term_id','sis_course_id'])
+print('Gathering Courses in Term')
+for i in courses:
+    if i.term['sis_term_id'] == termidlookingfor:
+        df = df.append({'courseid':i.id,
+                'course_sis_id':i.sis_course_id,
+                'coursename':i.name}, ignore_index=True)
+        print('Added to Pandas ',i.id,' Course Name:',i.name)
+for index, row in df.iterrows():
+    bid = row["courseid"]
+    bname = row["coursename"]
+    bsiscourseid = row["course_sis_id"]
+    #print('Enrolled ',teacheremail,' as TA in class ',bname,'(',bid,') ','(',bsiscourseid,')')
+    asapclass = canvas.get_course(bsiscourseid,use_sis_id=True)
     user = canvas.get_user(teacheremail,'sis_login_id')
-    enrollment = asapclass.enroll_user(user.id, "TaEnrollment",
+    try:
+        enrollment = asapclass.enroll_user(user.id, "TaEnrollment",
                     enrollment = {
-                        "sis_course_id": coursesisid,
+                        "sis_course_id": bsiscourseid,
                         "notify": True,
                         "enrollment_state": "active"
                         }
                     )
-    print('Enrolled TA in class')
-except CanvasException as e:
-    if str(e) == "Not Found":
-        print('Error finding course')
-        print(str(e))
+        print('Enrolled ',teacheremail,' as TA in class ',bname,'(',bid,') ','(',bsiscourseid,')')
+    except CanvasException as e:
+        if str(e) == "Not Found":
+            print('Error finding course')
+            print(str(e))
