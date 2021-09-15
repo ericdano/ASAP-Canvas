@@ -6,6 +6,9 @@ import requests, json, logging, smtplib, datetime, sys
 
 # This script replaces two scripts. One that was called Rename Course End of Term
 #
+#
+# NOT CURRENTLY WORKING!!!!!!!!!!!!!!! 9-15-2021
+#
 # Purpose - This script goes through a term, and tacks on a user defined string to the sis_course_id, and the course_code. 
 #           It also tacks on a String to the course name
 #
