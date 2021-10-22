@@ -143,9 +143,9 @@ def enrollstudent(coursecodetoenroll,coursetoenrollname,enrollmentstatuscd,stude
                 if stu.user_id == user.id:
                     stu.deactivate(task='delete')
                     logging.info('Deleted student from ' + coursetoenrollname)
-                    msgbody += 'Dropped ' + studentemailaddress + ' from ' + coursetoenrollname + '\n'
+                    msgbody += 'Dropped ' + studentemailaddress + ' from ' + coursetoenrollname +  ' (' + coursecodetoenroll + ') \n'
                     if configs['Debug'] == "True":
-                        dmsgbody += 'Dropped ' + studentemailaddress + ' from ' + coursetoenrollname + '\n'
+                        dmsgbody += 'Dropped ' + studentemailaddress + ' from ' + coursetoenrollname +  ' (' + coursecodetoenroll + ') \n'
         else:
             # Other ASAP things could be PEND or ENROLLED.
             enrollment = course.enroll_user(user,"StudentEnrollment",
