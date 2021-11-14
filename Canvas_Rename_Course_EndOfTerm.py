@@ -6,8 +6,7 @@ from pathlib import Path
 import requests, json, logging, smtplib, datetime, sys
 
 #
-# ----- Script moved over to RollOver_Classes.py
-# ----- To be deleted after 7/4/2021
+# 
 #
 # Script to rename classes in Canvas that are from the previous term
 # We generally are keeping all previous classes in our Canvas rather than deleting them
@@ -57,34 +56,23 @@ df = pd.DataFrame(columns = column_names)
 courses=account.get_courses(include=['term','sis_term_id'])
 for i in courses:
     if i.term['sis_term_id'] == termidlookingfor:
-        print(i.id," ",i.name," ",i.term['sis_term_id'])
+        #print(i.id," ",i.name," ",i.term['sis_term_id'])
         df = df.append({'courseid':i.id,
                'coursename':i.name,
                'sistermid':i.term['sis_term_id'],
                'newcoursename':prependname + i.name}, ignore_index=True)
-for index, row in df.iterrows():
-    #if row["sistermid"]==termidlookingfor:
-    print("Updating term->",row["sistermid"]," courseid:",row["courseid"],"->",row["coursename"]," to ",row["newcoursename"])
-    logging.info('Updating term->' + row["sistermid"] + ' courseid:' + str(row["courseid"]) + '->' + row["coursename"] + ' to ' + row["newcoursename"])
-    newname = row["newcoursename"]
-    cid = row["courseid"]
-          #------------------
-          # uncomment the next two lines at the BOTTOM to make ACTUAL changes to your Canvas
-          #---------------------------
-          #course = canvas.get_course(cid)
-          #course.update(course={'name': newname})
-
-# Now go through and update the SIS_ID and Course_codes and tack on a suffex to it
+# Now go through and update the SIS_ID and Course_codes and tack on a suffex and rename the course
 for index, row in df.iterrows():
     bid = row["courseid"]
     c = canvas.get_course(bid)
     new_sis_id = c.sis_course_id + prependccstr
+    newcoursename = prependname + c.name
     #print(new_sis_id)
     #print(course.sis_course_id)
-    print("Updating term->",termidlookingfor," courseid:",c.sis_course_id," to ", new_sis_id, " and ",c.name," to ",c.name,prependnamestr)
-    logging.info('Updating term->' + termidlookingfor + ' courseid:' + c.sis_course_id + ' to ' + c.sis_course_id + prependccstr + ' and ' + c.name + ' to ' + course.name + prependnamestr)
-    #course.update(course={'course_code':new_sis_id,
-    #                      'sis_course_id':new_sis_id,
-    #                      'name':prependnamestr})
+    print("Updating term->",termidlookingfor," courseid:",c.sis_course_id," to ", new_sis_id, " and ",c.name," to ",newcoursename)
+    logging.info('Updating term->' + termidlookingfor + ' courseid:' + c.sis_course_id + ' to ' + c.sis_course_id + prependccstr + ' and ' + c.name + ' to ' + newcoursename)
+    c.update(course={'course_code':new_sis_id,
+                          'sis_course_id':new_sis_id,
+                          'name':newcoursename})
 logging.info('Done -- RollOver_classes.py')
-Print('Done!')
+print('Done!')
