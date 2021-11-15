@@ -4,8 +4,8 @@ from canvasapi import Canvas
 from canvasapi.exceptions import CanvasException
 from pathlib import Path
 #
-# Quick and easy way to enroll a teacher as teacher in a class.
-# python Canvas_Enroll_Teacher_In_Course.py 22222 me@institute.com
+# Quick and easy way to enroll a users as teacher aid in a class.
+# python Enroll_User_As_TA.py 22222 me@institute.com
 #
 coursesisid = sys.argv[1]
 teacheremail = sys.argv[2]
