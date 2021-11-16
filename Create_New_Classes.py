@@ -9,7 +9,6 @@ from email.message import EmailMessage
 # This program reads a CSV file with the fields of
 # EMAIL, CourseName, COURSECODE, TEMPLATE
 # It will create create new courses from CSV Based on the Template you want, and enroll the teacher into the course
-
 if len(sys.argv) < 3:
     print('Script needs two arguments: python name.csv "term"')
     print('CSV file should be have headers of COURSECODE, CurrentSIS_ID, CourseName')
