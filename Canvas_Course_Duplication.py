@@ -72,7 +72,7 @@ for term in terms:
         term_id = term.id
     else:
        logging.info('Looking for Term ID')
-       print('Looking for Term ID')
+       print('Looking for Term ID ' + term.name)
 if term_id == 0:
     print('Term ID is still 0, stopping program.')
     dmsgbody=dmsgbody+'Did not find Term in Canvas. Aborted program.'
