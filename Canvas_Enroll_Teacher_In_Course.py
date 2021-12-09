@@ -24,7 +24,20 @@ print(coursesisid)
 print(teacheremail)
 try:
     asapclass = canvas.get_course(coursesisid,use_sis_id=True)
+
+except CanvasException as e:
+    if str(e) == "Not Found":
+        print('Error finding course')
+        print(str(e))
+        exit()
+try:
     user = canvas.get_user(teacheremail,'sis_login_id')
+except CanvasException as e:
+    if str(e) == "Not Found":
+        print('Error finding course')
+        print(str(e))
+        exit()
+try:
     enrollment = asapclass.enroll_user(user.id, "TeacherEnrollment",
                     enrollment = {
                         "sis_course_id": coursesisid,
@@ -32,8 +45,10 @@ try:
                         "enrollment_state": "active"
                         }
                     )
-    print('Enrolled teacher in class')
+
 except CanvasException as e:
     if str(e) == "Not Found":
         print('Error finding course')
         print(str(e))
+        exit()
+print('Enrolled teacher in class')
