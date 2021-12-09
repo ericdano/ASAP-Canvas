@@ -20,7 +20,6 @@ Canvas_API_KEY = configs['CanvasAPIKey']
 #prep status (msg) and debug (dmsg) emails
 canvas = Canvas(Canvas_API_URL, Canvas_API_KEY)
 account = canvas.get_account(1)
-#Function to Copy Course
 print(coursesisid)
 print(teacheremail)
 try:
