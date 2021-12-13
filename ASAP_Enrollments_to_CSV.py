@@ -35,7 +35,7 @@ elif r.status_code == 200:
     logging.info('Getting data from ASAP')
     r2 = requests.get(url2,headers = header)
     #print(r2)
-    results = pd.concat([pd.json_normalize(r2.json()), pd.json_normalize(r2.json(),record_path="Students", max_level=2)], axis=1).drop('Students',1)
+    results = pd.concat([pd.json_normalize(r2.json()), pd.json_normalize(r2.json(),record_path="Students", max_level=2)], axis=1).drop(columns='Students')
     #Drop columns we don't need, keep the ones we want
     results.drop(results.columns.difference(['CreatedDate',
                                             'EventEnrollmentID',
