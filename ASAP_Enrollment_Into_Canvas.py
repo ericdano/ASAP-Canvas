@@ -199,7 +199,7 @@ elif r.status_code == 200:
     results = pd.concat([pd.json_normalize(r2.json()), pd.json_normalize(r2.json(),record_path="Students", max_level=2)], axis=1).drop(columns='Students')
     # was drop('Students',1)
     #Drop columns we don't need
-    results.drop(results.columns.difference(columns=['CreatedDate',
+    results.drop(results.columns.difference(['CreatedDate',
                                             'EventEnrollmentID',
                                             'ScheduledEvent.Course.CourseName',
                                             'EnrollmentStatusCd',
