@@ -46,6 +46,6 @@ elif r.status_code == 200:
                                             'CustomerID',
                                             'Person.Email',
                                             'Person.FirstName',
-                                            'Person.LastName']),1,inplace=True)
+                                            'Person.LastName']),axis=1,inplace=True)
     print(results)
     results.to_csv(csvfilename)
