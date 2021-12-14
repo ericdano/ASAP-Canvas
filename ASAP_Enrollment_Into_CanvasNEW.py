@@ -263,6 +263,7 @@ elif r.status_code == 200:
                     newenrolls['Person.Email'][i])
             except CanvasException as e:
             #Didn't find email address
+            #Now see if the sis_user_id is in there
                 if str(e) == "Not Found":
                     if configs['Debug'] == "True":
                         print('Checking for SIS_ID ' + newenrolls['Person.Email'][i])
@@ -272,10 +273,17 @@ elif r.status_code == 200:
                     sis_user_id = newenrolls['CustomerID'][i]
                     sortname = newenrolls['Person.LastName'][i] + ", " + newenrolls['Person.FirstName'][i]
                     emailaddr = newenrolls['Person.Email'][i]
+                    #try and see if sis_user_id is in Canvas
                     try: 
                         user = canvas.get_user(newenrolls['CustomerID'][i],'sis_user_id')
                         # User has changed their email, take existing email, add it as a login, and make the this new email the sis_login_id
-                        
+                        olduseremail = user.unique_id #get the current email address
+                        user.edit(
+                                pseudonym={
+                                'unique_id': emailaddr.lower()                                    
+                                }
+                        ) 
+                        create_user_login(user,olduseremail)                       
                     except CanvasException as e2:
                         if str(e2) == "Not Found":
                             #Ok, CustomerID is not the sis_user_id, so create the user
