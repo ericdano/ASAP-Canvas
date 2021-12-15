@@ -62,6 +62,7 @@ try:
         #if login.unique_id == 'eric@dannewitz.com':
         #    login.edit(login={'unique_id':'ericdano@jazz-flute.com'})
         #print(login)
+    #This creates a new Login for user
     account.create_user_login(user={'id':user.id},
                             login={'unique_id':'ericdano@jazz-clarinet.com'})
     #try:

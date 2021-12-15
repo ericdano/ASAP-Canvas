@@ -272,7 +272,7 @@ elif r.status_code == 200:
                     newenrolls['Person.Email'][i])
             except CanvasException as e:
             #Didn't find email address
-            #Now see if the sis_user_id is in there
+            #Now see if the sis_user_id is in there - New code as of 12-2021
                 if str(e) == "Not Found":
                     if configs['Debug'] == "True":
                         print('Checking for SIS_ID ' + newenrolls['Person.Email'][i])
@@ -285,22 +285,36 @@ elif r.status_code == 200:
                     #try and see if sis_user_id is in Canvas
                     try: 
                         user = canvas.get_user(newenrolls['CustomerID'][i],'sis_user_id')
+                        # We made it here, no errors thrown by Canvas
                         # User has changed their email, take existing email, add it as a login, and make the this new email the sis_login_id
+                        #
                         olduseremail = user.unique_id #get the current email address
                         logging.info('Seems that we have someone ' + newenrolls['CustomerID'][i] + ' who changed their ASAP email, so lets change it in Canvas and add the old one as a Login for them\n')
                         if configs['Debug'] == "True":
                             dmsgbody += 'CustomerID ' + newenrolls['CustomerID'][i]] + ' is associated with a different email\n'
                             dmsgbody += 'Changing ' + olduseremail + ' to ' + emailaddr 
+                        # no exception put in, going to assume that this works as we just GOT the user from Canvas
                         user.edit(
                                 pseudonym={
                                 'unique_id': emailaddr.lower()                                    
                                 }
                         ) 
-                        try:
-                            account.create_user_login(user={'id':user.id},
-                                                    login={'unquie_id':olduseremail.lower()})
-                        except CanvasException as e11:
-                            PanicStop(e11 + ' when created additional login for user')
+                        # Now lets make sure that we don't have a login already for this person, and that they are now
+                        # using the LOGIN as the default
+                        #
+                        userlogins = user.get_user_logins()
+                        foundanotherlogin = False
+                        for login in userlogins:
+                            if login.unique_id == olduseremail:
+                                foundanotherlogin=True
+                        if not(foundanotherlogin):
+                        #ok, oldemailaddress not in previous logins. Go ahead and make it for this user
+                            try:
+                                account.create_user_login(user={'id':user.id},
+                                                        login={'unquie_id':olduseremail.lower()})
+                            # Create an additional LOGIN for the user using the OLD email address
+                            except CanvasException as e11:
+                                PanicStop(e11 + ' when created additional login for user')
                     except CanvasException as e2:
                         if str(e2) == "Not Found":
                             #Ok, CustomerID is not the sis_user_id, so create the user
