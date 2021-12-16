@@ -32,8 +32,8 @@ Canvas_API_URL = configs['CanvasAPIURL']
 Canvas_API_KEY = configs['CanvasAPIKey']
 canvas = Canvas(Canvas_API_URL, Canvas_API_KEY)
 account = canvas.get_account(1)
-emailaddr = 'ericdannewitz@mac.com'
-olduseremail = 'kpilkington@auhsdschools.org'
+emailaddr = 'kpilkington@auhsdschools.org'
+olduseremail = 'ericdannewitz@me.com'
 try: 
     user = canvas.get_user('agent007','sis_user_id')
     print(user.name)
@@ -55,7 +55,16 @@ try:
     except CanvasException as e3:
         print(e3)   
     logins = user.get_user_logins()
-    account.edit_user_login(user.id,login={'unique_id':'ericdano@yahoo.com'})
+    for login in logins:
+        print(login)
+        #if login.unique_id == 'ericdano@yahoo.com':
+        #    login.edit(login={'unique_id':'ericdano@gmail.com'})
+        #if login.unique_id == 'eric@dannewitz.com':
+        #    login.edit(login={'unique_id':'ericdano@jazz-flute.com'})
+        #print(login)
+    #This creates a new Login for user
+    account.create_user_login(user={'id':user.id},
+                            login={'unique_id':'ericdano@jazz-clarinet.com'})
     #try:
     #logins = user.get_user_logins()
     ##for login in logins:

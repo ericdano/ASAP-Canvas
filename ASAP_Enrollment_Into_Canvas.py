@@ -17,6 +17,8 @@ from email.mime.image import MIMEImage
 # This will generate an error, quit the program, and send an email out that it needs to be addressed
 # .06 Added more error checking
 # .07 Added even more error checking and messaging (will now include in email if it skipped any classes in skip list)
+# .1 - 2021 -> Added logic to deal with ASAP accounts when they change the email address but the customer ID is the same
+
 #load configs
 home = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
 confighome = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
@@ -83,6 +85,15 @@ def emailCOVIDletter(lettertoemail):
 
 #Funcction to email intro letter out to new Students
 #Looks for a CVS file of emails previously sent out to not send out the same letter again
+def PanicStop(panicmsgstr):
+        logging.info('Canvas error ' + panicmsgstr + ' Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports. ')
+        print('Canvas error ' + str(ec) + ' Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports.')
+        s = smtplib.SMTP(configs['SMTPServerAddress'])
+        msgbody += 'Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports.\n\n\nPanic!!!\n'
+        dmsgbody += 'Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports.\n\n\nPanic!!!\n'
+        msg.set_content(msgbody)
+        s.send_message(msg)
+        raise
 def emailintroletter(lettertoemail):
     global SentIntroLetters, msgbody, dmsgbody
     logging.info('Prepping to send intro letter from AE')
@@ -263,65 +274,102 @@ elif r.status_code == 200:
                     newenrolls['Person.Email'][i])
             except CanvasException as e:
             #Didn't find email address
+            #Now see if the sis_user_id is in there - New code as of 12-2021
                 if str(e) == "Not Found":
                     if configs['Debug'] == "True":
                         print('Checking for SIS_ID ' + newenrolls['Person.Email'][i])
-                        dmsgbody += 'Checking for SIS_ID ' + newenrolls['Person.Email'][i] + ' in Canvas\n'
-                    logging.info('User not found, creating')
+                        dmsgbody += 'Checking for SIS_ID ' + newenrolls['CustomerID'][i] + ' is associated with a different email than ' + newenrolls['Person.Email'][i] + ' in Canvas\n'
+                    logging.info('User not found with sis_login_id, looking if CustomerID and sis_user_id are the same.')
                     newusername = newenrolls['Person.FirstName'][i] + " " + newenrolls['Person.LastName'][i]
                     sis_user_id = newenrolls['CustomerID'][i]
                     sortname = newenrolls['Person.LastName'][i] + ", " + newenrolls['Person.FirstName'][i]
                     emailaddr = newenrolls['Person.Email'][i]
-                    # Needed to add case of user who changed emailed in ASAP but the sis_user_id is the same
-                    # throw up error message and email to rectify
-                    if configs['Debug'] == "True":
-                        print(newusername + " " + str(sis_user_id) + " " + emailaddr)
-                    user = account.create_user(
-                        user={
-                            'name': newusername,
-                            'short_name': newusername,
-                            'sortable_name': sortname
-                        },
-                        pseudonym={
-                            'unique_id': emailaddr.lower(),
-                            'force_self_registration': True,
-                            'sis_user_id': sis_user_id
-                        }
-                    )
-                    msgbody = msgbody + 'Added new account ' + emailaddr + ' for ' + newusername + '\n'
-                    if configs['NewUserCourse'] != '':
-                        logging.info('Enrolling new user into intro student Canvas course')
+                    #try and see if sis_user_id is in Canvas
+                    try: 
+                        user = canvas.get_user(newenrolls['CustomerID'][i],'sis_user_id')
+                        # We made it here, no errors thrown by Canvas
+                        # User has changed their email, take existing email, add it as a login, and make the this new email the sis_login_id
+                        #
+                        olduseremail = user.unique_id #get the current email address
+                                               # Now lets make sure that we don't have a login already for this person, and that they are now
+                        # using the LOGIN as the default
+                        #
+                        userlogins = user.get_user_logins()
+                        foundanotherlogin = False
+                        for login in userlogins:
+                            if login.unique_id == olduseremail:
+                                foundanotherlogin=True
+                                logging.info('Found ASAPs current default email as a login')
+                        logging.info('Seems that we have someone ' + newenrolls['CustomerID'][i] + ' who changed their ASAP email, so lets change it in Canvas and add the old one as a Login for them\n')
                         if configs['Debug'] == "True":
-                            dmsgbody += 'Enrolling ' + newenrolls['Person.Email'][i] + ' into intro student Canvas course\n'
-                        coursetoenroll = configs['NewUserCourse']
-                        course = canvas.get_course(coursetoenroll,'sis_course_id')
-                        enrollment = course.enroll_user(user,"StudentEnrollment",
-                                                        enrollment = {
-                                                            "sis_course_id": coursetoenroll,
-                                                            "notify": True,
-                                                            "enrollment_state": "active"
-                                                            }
-                                                        )
-                        msgbody += 'Enrolled ' + emailaddr + ' for ' + newusername + ' in the Intro to Canvas course\n'
-                        dmsgbody += 'Enrolled ' + emailaddr + ' for ' + newusername + ' in the Intro to Canvas course\n'
-                    # Look in config to see that you want to send an intro letter to people this session
-                    if configs['SendIntroLetters'] == "True":
-                        logging.info("Looking if we have sent intro letter to person...")
-                        senttheletter = SentIntroLetters[SentIntroLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
-                        if senttheletter.empty:
-                            logging.info("Going to send intro letter....")
-                            emailintroletter(newenrolls['Person.Email'][i])
-                    #after doing the letters, then enroll the student
+                            dmsgbody += 'CustomerID ' + newenrolls['CustomerID'][i] + ' is associated with a different email\n'
+                            dmsgbody += 'Changing ' + olduseremail + ' to ' + emailaddr 
+                        # no exception put in, going to assume that this works as we just GOT the user from Canvas
+                        user.edit(
+                                pseudonym={
+                                'unique_id': emailaddr.lower()                                    
+                                }
+                        ) 
+                        try:
+                            account.create_user_login(user={'id':user.id},
+                                                    login={'unquie_id':olduseremail.lower()})
+                        # Create an additional LOGIN for the user using the OLD email address
+                            logging.info('Created additional login for user id=' + user.id)
 
-                    if configs['SendCOVIDLetters'] == "True":
-                    # Check to see if we are sending welcome emails to this semester's students. Purely optional
-                        logging.info("Looking if we have sent COVID letter to person...")
-                        senttheCletter = SentCOVIDLetters[SentCOVIDLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
-                        if senttheCletter.empty:
-                            logging.info("Going to send COVID letter....")
-                            #pass email to send optional enrollment welcome letter
-                            emailCOVIDletter(newenrolls['Person.Email'][i])
-                    enrollstudent(newenrolls['ScheduledEvent.EventCd'][i],
+                        except CanvasException as e11:
+                            PanicStop(e11 + ' when created additional login for user')
+                    except CanvasException as e2:
+                        if str(e2) == "Not Found":
+                            #Ok, CustomerID is not the sis_user_id, so create the user
+                            if configs['Debug'] == "True":
+                                print('Creating user ' + newusername + " " + str(sis_user_id) + " " + emailaddr)
+                                dmsgbody += 'Creating user ' + newusername + " " + str(sis_user_id) + " " + emailaddr + '\n'
+                            user = account.create_user(
+                                user={
+                                    'name': newusername,
+                                    'short_name': newusername,
+                                    'sortable_name': sortname
+                                    },
+                                    pseudonym={
+                                    'unique_id': emailaddr.lower(),
+                                    'force_self_registration': True,
+                                    'sis_user_id': sis_user_id
+                                }
+                            )
+                            msgbody = msgbody + 'Added new account ' + emailaddr + ' for ' + newusername + '\n'
+                            logging.info('Created new account for '+ emailaddr + ' for ' + newusername)
+                            if configs['NewUserCourse'] != '':
+                                logging.info('Enrolling new user into intro student Canvas course')
+                            if configs['Debug'] == "True":
+                                dmsgbody += 'Enrolling ' + newenrolls['Person.Email'][i] + ' into intro student Canvas course\n'
+                            coursetoenroll = configs['NewUserCourse']
+                            course = canvas.get_course(coursetoenroll,'sis_course_id')
+                            enrollment = course.enroll_user(user,"StudentEnrollment",
+                                                            enrollment = {
+                                                                "sis_course_id": coursetoenroll,
+                                                                "notify": True,
+                                                                "enrollment_state": "active"
+                                                                }
+                                                            )
+                            msgbody += 'Enrolled ' + emailaddr + ' for ' + newusername + ' in the Intro to Canvas course\n'
+                            dmsgbody += 'Enrolled ' + emailaddr + ' for ' + newusername + ' in the Intro to Canvas course\n'
+            # User has been created or login moved around, proceed to enroll student into class
+            # Look in config to see that you want to send an intro letter to people this session
+            if configs['SendIntroLetters'] == "True":
+                logging.info("Looking if we have sent intro letter to person...")
+            senttheletter = SentIntroLetters[SentIntroLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
+            if senttheletter.empty:
+                logging.info("Going to send intro letter....")
+                emailintroletter(newenrolls['Person.Email'][i])
+            if configs['SendCOVIDLetters'] == "True":
+            # Check to see if we are sending welcome emails to this semester's students. Purely optional
+                logging.info("Looking if we have sent COVID letter to person...")
+                senttheCletter = SentCOVIDLetters[SentCOVIDLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
+                if senttheCletter.empty:
+                    logging.info("Going to send COVID letter....")
+                    #pass email to send optional enrollment welcome letter
+                    emailCOVIDletter(newenrolls['Person.Email'][i])
+            enrollstudent(newenrolls['ScheduledEvent.EventCd'][i],
                         newenrolls['ScheduledEvent.Course.CourseName'][i],
                         newenrolls['EnrollmentStatusCd'][i],
                         newenrolls['Person.Email'][i])
