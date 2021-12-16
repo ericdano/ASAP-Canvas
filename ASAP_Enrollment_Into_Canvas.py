@@ -322,7 +322,7 @@ elif r.status_code == 200:
                         if str(e2) == "Not Found":
                             #Ok, CustomerID is not the sis_user_id, so create the user
                             if configs['Debug'] == "True":
-                                print('Creating user ' + newusername + " " + str(sis_user_id) + " " + emailaddr)
+                                print('SIS_ID Not found, Creating new user ' + newusername + " " + str(sis_user_id) + " " + emailaddr)
                                 dmsgbody += 'Creating user ' + newusername + " " + str(sis_user_id) + " " + emailaddr + '\n'
                             user = account.create_user(
                                 user={
