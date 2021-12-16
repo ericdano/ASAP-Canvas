@@ -358,9 +358,9 @@ elif r.status_code == 200:
             if configs['SendIntroLetters'] == "True":
                 logging.info("Looking if we have sent intro letter to person...")
                 senttheletter = SentIntroLetters[SentIntroLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
-            if senttheletter.empty:
-                logging.info("Going to send intro letter....")
-                emailintroletter(newenrolls['Person.Email'][i])
+                if senttheletter.empty:
+                    logging.info("Going to send intro letter....")
+                    emailintroletter(newenrolls['Person.Email'][i])
             if configs['SendCOVIDLetters'] == "True":
             # Check to see if we are sending welcome emails to this semester's students. Purely optional
                 logging.info("Looking if we have sent COVID letter to person...")
