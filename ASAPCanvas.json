@@ -22,5 +22,9 @@
   "SendIntroLetters": "True",
   "IntroLetterPath": "E:/AEMessage/",
   "IntroLetterFile" : "AEMessage.html",
-  "SentIntroLettersCSV": "SentIntroEmails.csv"
+  "SentIntroLettersCSV": "SentIntroEmails.csv",
+  "SendCOVIDLetters": "True",
+  "COVIDLetterPath": "E:/AEMessage/",
+  "COVIDLetterFile" : "AAEVoluntaryVaccinationVerificationLetter.html",
+  "SentCOVIDLettersCSV": "SentCOVIDEmails.csv"
 }
