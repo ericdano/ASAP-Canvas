@@ -32,13 +32,11 @@ logging.info('Flipping bit to restrict students from seeing class before Term da
 column_names = ["courseid","coursename","sistermid"]
 df = pd.DataFrame(columns = column_names)
 courses=account.get_courses(include=['term','sis_term_id'])
-for i in courses:
-    if i.term['sis_term_id'] == termidlookingfor:
-        #print(i.id," ",i.name," ",i.term['sis_term_id'])
-        df = df.append({'courseid':i.id,
-               'coursename':i.name,
-               'sistermid':i.term['sis_term_id']}, ignore_index=True)
-# Now go through and update the SIS_ID and Course_codes and tack on a suffex and rename the course
+for course in courses:
+    if course.term['sis_term_id'] == termidlookingfor:
+        df = df.append({'courseid':course.id,
+               'coursename':course.name,
+               'sistermid':course.term['sis_term_id']}, ignore_index=True)
 for index, row in df.iterrows():
     bid = row["courseid"]
     c = canvas.get_course(bid)
