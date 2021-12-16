@@ -278,7 +278,7 @@ elif r.status_code == 200:
                 if str(e) == "Not Found":
                     if configs['Debug'] == "True":
                         print('Checking for SIS_ID ' + newenrolls['Person.Email'][i])
-                        dmsgbody += 'Checking for SIS_ID ' + newenrolls['CustomerID'][i] + ' is associated with a different email than ' + newenrolls['Person.Email'][i] + ' in Canvas\n'
+                        dmsgbody += 'Checking for SIS_ID ' + str(newenrolls['CustomerID'][i])+ ' is associated with a different email than ' + newenrolls['Person.Email'][i] + ' in Canvas\n'
                     logging.info('User not found with sis_login_id, looking if CustomerID and sis_user_id are the same.')
                     newusername = newenrolls['Person.FirstName'][i] + " " + newenrolls['Person.LastName'][i]
                     sis_user_id = newenrolls['CustomerID'][i]
@@ -369,6 +369,7 @@ elif r.status_code == 200:
                     logging.info("Going to send COVID letter....")
                     #pass email to send optional enrollment welcome letter
                     emailCOVIDletter(newenrolls['Person.Email'][i])
+            #Done sending letters
             enrollstudent(newenrolls['ScheduledEvent.EventCd'][i],
                         newenrolls['ScheduledEvent.Course.CourseName'][i],
                         newenrolls['EnrollmentStatusCd'][i],
