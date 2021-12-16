@@ -353,22 +353,22 @@ elif r.status_code == 200:
                                                             )
                             msgbody += 'Enrolled ' + emailaddr + ' for ' + newusername + ' in the Intro to Canvas course\n'
                             dmsgbody += 'Enrolled ' + emailaddr + ' for ' + newusername + ' in the Intro to Canvas course\n'
-            # User has been created or login moved around, proceed to enroll student into class
-            # Look in config to see that you want to send an intro letter to people this session
-            if configs['SendIntroLetters'] == "True":
-                logging.info("Looking if we have sent intro letter to person...")
-                senttheletter = SentIntroLetters[SentIntroLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
-                if senttheletter.empty:
-                    logging.info("Going to send intro letter....")
-                    emailintroletter(newenrolls['Person.Email'][i])
-            if configs['SendCOVIDLetters'] == "True":
-            # Check to see if we are sending welcome emails to this semester's students. Purely optional
-                logging.info("Looking if we have sent COVID letter to person...")
-                senttheCletter = SentCOVIDLetters[SentCOVIDLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
-                if senttheCletter.empty:
-                    logging.info("Going to send COVID letter....")
-                    #pass email to send optional enrollment welcome letter
-                    emailCOVIDletter(newenrolls['Person.Email'][i])
+                # User has been created or login moved around, proceed to enroll student into class
+                # Look in config to see that you want to send an intro letter to people this session
+                if configs['SendIntroLetters'] == "True":
+                    logging.info("Looking if we have sent intro letter to person...")
+                    senttheletter = SentIntroLetters[SentIntroLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
+                    if senttheletter.empty:
+                        logging.info("Going to send intro letter....")
+                        emailintroletter(newenrolls['Person.Email'][i])
+                if configs['SendCOVIDLetters'] == "True":
+                # Check to see if we are sending welcome emails to this semester's students. Purely optional
+                    logging.info("Looking if we have sent COVID letter to person...")
+                    senttheCletter = SentCOVIDLetters[SentCOVIDLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
+                    if senttheCletter.empty:
+                        logging.info("Going to send COVID letter....")
+                        #pass email to send optional enrollment welcome letter
+                        emailCOVIDletter(newenrolls['Person.Email'][i])
             #Done sending letters
             #Finally ENROLL the student into the Canvas Class
             enrollstudent(newenrolls['ScheduledEvent.EventCd'][i],
