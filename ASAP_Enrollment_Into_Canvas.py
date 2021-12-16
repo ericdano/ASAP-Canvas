@@ -370,6 +370,7 @@ elif r.status_code == 200:
                     #pass email to send optional enrollment welcome letter
                     emailCOVIDletter(newenrolls['Person.Email'][i])
             #Done sending letters
+            #Finally ENROLL the student into the Canvas Class
             enrollstudent(newenrolls['ScheduledEvent.EventCd'][i],
                         newenrolls['ScheduledEvent.Course.CourseName'][i],
                         newenrolls['EnrollmentStatusCd'][i],
