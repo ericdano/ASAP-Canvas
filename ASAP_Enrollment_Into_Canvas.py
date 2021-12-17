@@ -268,10 +268,10 @@ elif r.status_code == 200:
                         logging.info("Going to send COVID letter....")
                         #pass email to send optional enrollment welcome letter
                         emailCOVIDletter(newenrolls['Person.Email'][i])
-                enrollstudent(newenrolls['ScheduledEvent.EventCd'][i],
-                    newenrolls['ScheduledEvent.Course.CourseName'][i],
-                    newenrolls['EnrollmentStatusCd'][i],
-                    newenrolls['Person.Email'][i])
+                #enrollstudent(newenrolls['ScheduledEvent.EventCd'][i],
+                #    newenrolls['ScheduledEvent.Course.CourseName'][i],
+                #    newenrolls['EnrollmentStatusCd'][i],
+                #    newenrolls['Person.Email'][i])
             except CanvasException as e:
             #Didn't find email address
             #Now see if the sis_user_id is in there - New code as of 12-2021
