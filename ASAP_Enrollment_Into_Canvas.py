@@ -149,14 +149,18 @@ def enrollstudent(coursecodetoenroll,coursetoenrollname,enrollmentstatuscd,stude
             if configs['Debug'] == 'True':
                 dmsgbody += 'Dropping ' + studentemailaddress +'\n'
             enrollments = course.get_enrollments(type='StudentEnrollment')
+            lookfordelete = False
             for stu in enrollments:
                 # You have to loop through all the enrollments for the class and then find the student id in the enrollment then tell it to delete it.
                 if stu.user_id == user.id:
+                    lookfordelete = True
                     stu.deactivate(task='delete')
                     logging.info('Deleted student from ' + coursetoenrollname)
                     msgbody += 'Dropped ' + studentemailaddress + ' from ' + coursetoenrollname +  ' (' + coursecodetoenroll + ') \n'
                     if configs['Debug'] == "True":
                         dmsgbody += 'Dropped ' + studentemailaddress + ' from ' + coursetoenrollname +  ' (' + coursecodetoenroll + ') \n'
+            if lookfordelete == False:
+                msgbody += 'Tried to Drop ' + studentemailaddress + ' from ' + coursetoenrollname +  ' (' + coursecodetoenroll + ') but they had not made it into Canvas yet. (DROPPED class before last run) \n'
         else:
             # Other ASAP things could be PEND or ENROLLED.
             enrollment = course.enroll_user(user,"StudentEnrollment",
