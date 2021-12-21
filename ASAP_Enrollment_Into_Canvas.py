@@ -51,6 +51,18 @@ if configs['SendIntroLetters'] == "True":
 if configs['SendCOVIDLetters'] == "True":
     logging.info('Reading Previous Sent COVID Letters file')
     SentCOVIDLetters = pd.read_csv(Path(configs['COVIDLetterPath']+configs['SentCOVIDLettersCSV']))
+#
+#
+def PanicStop(panicmsgstr):
+    # This gets called when we get an error we excepted for
+    logging.info('Canvas error ' + panicmsgstr + ' Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports. ')
+    print('Canvas error ' + str(ec) + ' Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports.')
+    s = smtplib.SMTP(configs['SMTPServerAddress'])
+    msgbody += 'Panic!! Stopping imports on error ' + panicmsgstr + ' -> Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' \n\nPanic!!!\n'
+    dmsgbody += 'Panic!! Stopping imports on error ' + panicmsgstr + ' -> Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' \n\nPanic!!!\n'
+    msg.set_content(msgbody)
+    s.send_message(msg)
+    raise
 #Funcction to email COVID vaccine status
 #Looks for a CVS file of emails previously sent out to not send out the same letter again
 def emailCOVIDletter(lettertoemail):
@@ -85,15 +97,6 @@ def emailCOVIDletter(lettertoemail):
 
 #Funcction to email intro letter out to new Students
 #Looks for a CVS file of emails previously sent out to not send out the same letter again
-def PanicStop(panicmsgstr):
-        logging.info('Canvas error ' + panicmsgstr + ' Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports. ')
-        print('Canvas error ' + str(ec) + ' Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports.')
-        s = smtplib.SMTP(configs['SMTPServerAddress'])
-        msgbody += 'Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports.\n\n\nPanic!!!\n'
-        dmsgbody += 'Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports.\n\n\nPanic!!!\n'
-        msg.set_content(msgbody)
-        s.send_message(msg)
-        raise
 def emailintroletter(lettertoemail):
     global SentIntroLetters, msgbody, dmsgbody
     logging.info('Prepping to send intro letter from AE')
@@ -249,6 +252,9 @@ elif r.status_code == 200:
     for i in newenrolls.index:
         #Look for classes we don't do canvas for, and skip
         if not newenrolls['ScheduledEvent.EventCd'][i] in configs['SkipCourses']:
+            # Check to make sure we have an email
+            if ([newenrolls['Person.Email'][i] == ''):
+                PanicStop('Email address is empty!!!')
             # Now look up the user by email
             try:
                 user = canvas.get_user(newenrolls['Person.Email'][i],'sis_login_id')
