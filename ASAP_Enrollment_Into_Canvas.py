@@ -253,7 +253,7 @@ elif r.status_code == 200:
         #Look for classes we don't do canvas for, and skip
         if not newenrolls['ScheduledEvent.EventCd'][i] in configs['SkipCourses']:
             # Check to make sure we have an email
-            if ([newenrolls['Person.Email'][i] == ''):
+            if (newenrolls['Person.Email'][i] == ''):
                 PanicStop('Email address is empty!!!')
             # Now look up the user by email
             try:
