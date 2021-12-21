@@ -314,8 +314,8 @@ elif r.status_code == 200:
                         for login in userlogins:
                             if login.unique_id == olduseremail:
                                 foundanotherlogin=True
-                                print('Found ASAPs current default email ' emailaddr.lower() + 'as a login')
-                                logging.info('Found ASAPs current default email ' emailaddr.lower() + 'as a login')
+                                print('Found ASAPs current default email '+ emailaddr.lower() + 'as a login')
+                                logging.info('Found ASAPs current default email ' + emailaddr.lower() + 'as a login')
                         logging.info('Seems that we have someone ' + str(newenrolls['CustomerID'][i]) + ' who changed their ASAP email, so lets change it in Canvas and add the old one as a Login for them\n')
                         if configs['Debug'] == "True":
                             dmsgbody += 'CustomerID ' + str(newenrolls['CustomerID'][i]) + ' is associated with a different email\n'
