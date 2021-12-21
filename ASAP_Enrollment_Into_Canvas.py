@@ -42,9 +42,6 @@ introletterfrom = configs['SMTPAddressFrom']
 dmsg['From'] = configs['SMTPAddressFrom']
 msg['To'] = configs['SendInfoEmailAddr']
 dmsg['To'] = configs['DebugEmailAddr']
-msgbody = ''
-skippedbody = ''
-dmsgbody = ''
 if configs['SendIntroLetters'] == "True":
     logging.info('Reading Previous Sent Intro Letters file')
     SentIntroLetters = pd.read_csv(Path(configs['IntroLetterPath']+configs['SentIntroLettersCSV']))
@@ -53,6 +50,11 @@ if configs['SendCOVIDLetters'] == "True":
     SentCOVIDLetters = pd.read_csv(Path(configs['COVIDLetterPath']+configs['SentCOVIDLettersCSV']))
 #
 #
+def Set_globals():
+    global msgbody,skippedbody,dmsgbody
+    msgbody = ''
+    skippedbody = ''
+    dmsgbody = ''
 def PanicStop(panicmsgstr):
     # This gets called when we get an error we excepted for
     logging.info('Canvas error ' + panicmsgstr + ' Stopping imports. ')
@@ -195,6 +197,7 @@ apikey = configs['ASAPAPIKey']
 url = configs['ASAPurl']
 headers = {'Authorization' : 'user='+userid+'&organizationId='+orgid+'&password='+password+'&apiKey='+apikey}
 logging.info('Getting ASAP Key')
+Set_globals()
 r = requests.get(url,headers = headers)
 if r.status_code == 404:
     logging.info('Failed to get ASAP Key')
