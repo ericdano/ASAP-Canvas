@@ -55,11 +55,11 @@ if configs['SendCOVIDLetters'] == "True":
 #
 def PanicStop(panicmsgstr):
     # This gets called when we get an error we excepted for
-    logging.info('Canvas error ' + panicmsgstr + ' Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports. ')
-    print('Canvas error ' + str(ec) + ' Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports.')
+    logging.info('Canvas error ' + panicmsgstr + ' Stopping imports. ')
+    print('Canvas error ' + str(ec) ' Stopping imports.')
     s = smtplib.SMTP(configs['SMTPServerAddress'])
-    msgbody += 'Panic!! Stopping imports on error ' + panicmsgstr + ' -> Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' \n\nPanic!!!\n'
-    dmsgbody += 'Panic!! Stopping imports on error ' + panicmsgstr + ' -> Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' \n\nPanic!!!\n'
+    msgbody += 'Panic!! Stopping imports on error ' + panicmsgstr +' \n\nPanic!!!\n'
+    dmsgbody += 'Panic!! Stopping imports on error ' + panicmsgstr +' \n\nPanic!!!\n'
     msg.set_content(msgbody)
     s.send_message(msg)
     raise
