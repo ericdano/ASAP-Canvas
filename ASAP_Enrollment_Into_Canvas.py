@@ -327,7 +327,7 @@ elif r.status_code == 200:
                             logging.info('Created additional login for user id=' + user.id)
 
                         except CanvasException as e11:
-                            PanicStop(e11 + ' when created additional login for user')
+                            PanicStop(str(e11) + ' when created additional login for user')
                     except CanvasException as e2:
                         if str(e2) == "Not Found":
                             #Ok, CustomerID is not the sis_user_id, so create the user
