@@ -310,9 +310,9 @@ elif r.status_code == 200:
                             if login.unique_id == olduseremail:
                                 foundanotherlogin=True
                                 logging.info('Found ASAPs current default email as a login')
-                        logging.info('Seems that we have someone ' + newenrolls['CustomerID'][i] + ' who changed their ASAP email, so lets change it in Canvas and add the old one as a Login for them\n')
+                        logging.info('Seems that we have someone ' + str(newenrolls['CustomerID'][i]) + ' who changed their ASAP email, so lets change it in Canvas and add the old one as a Login for them\n')
                         if configs['Debug'] == "True":
-                            dmsgbody += 'CustomerID ' + newenrolls['CustomerID'][i] + ' is associated with a different email\n'
+                            dmsgbody += 'CustomerID ' + str(newenrolls['CustomerID'][i]) + ' is associated with a different email\n'
                             dmsgbody += 'Changing ' + olduseremail + ' to ' + emailaddr 
                         # no exception put in, going to assume that this works as we just GOT the user from Canvas
                         user.edit(
