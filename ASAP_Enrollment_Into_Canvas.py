@@ -300,7 +300,7 @@ elif r.status_code == 200:
                         # We made it here, no errors thrown by Canvas
                         # User has changed their email, take existing email, add it as a login, and make the this new email the sis_login_id
                         #
-                        olduseremail = user.unique_id #get the current email address
+                        olduseremail = user.login_id #get the current email address
                                                # Now lets make sure that we don't have a login already for this person, and that they are now
                         # using the LOGIN as the default
                         #
