@@ -50,10 +50,10 @@ if configs['SendCOVIDLetters'] == "True":
     SentCOVIDLetters = pd.read_csv(Path(configs['COVIDLetterPath']+configs['SentCOVIDLettersCSV']))
 #
 #
-global msgbody
-global skippedbody
-global dmsgbody
 def Set_globals():
+    global msgbody
+    global skippedbody
+    global dmsgbody
     msgbody = ''
     skippedbody = ''
     dmsgbody = ''
