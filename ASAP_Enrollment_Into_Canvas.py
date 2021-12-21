@@ -337,7 +337,7 @@ elif r.status_code == 200:
                                                     login={'unquie_id':olduseremail.lower()}
                                                     )
                         # Create an additional LOGIN for the user using the OLD email address
-                            logging.info('Created additional login for user id=' + user.id)
+                            logging.info('Created additional login for user id=' + str(user.id))
 
                         except CanvasException as e11:
                             PanicStop(str(e11) + ' when created additional login for user')
