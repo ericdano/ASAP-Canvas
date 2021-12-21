@@ -51,13 +51,12 @@ if configs['SendCOVIDLetters'] == "True":
 #
 #
 def Set_globals():
-    global msgbody
-    global skippedbody
-    global dmsgbody
+    global msgbody, skippedbody, dmsgbody
     msgbody = ''
     skippedbody = ''
     dmsgbody = ''
 def PanicStop(panicmsgstr):
+    global msgbody, skippedbody, dmsgbody
     # This gets called when we get an error we excepted for
     logging.info('Canvas error ' + panicmsgstr + ' Stopping imports. ')
     print('Canvas error ' + panicmsgstr + ' Stopping imports.')
