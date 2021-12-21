@@ -66,6 +66,7 @@ def PanicStop(panicmsgstr):
     msg.set_content(msgbody)
     s.send_message(msg)
     raise
+    exit()
 #Funcction to email COVID vaccine status
 #Looks for a CVS file of emails previously sent out to not send out the same letter again
 def emailCOVIDletter(lettertoemail):
@@ -305,9 +306,20 @@ elif r.status_code == 200:
                         # User has changed their email, take existing email, add it as a login, and make the this new email the sis_login_id
                         #
                         olduseremail = user.login_id #get the current email address
-                                               # Now lets make sure that we don't have a login already for this person, and that they are now
+                        old_profile = user.get_profile()
+                        old_primary_email = old_profile['primary_email']
+                        old_login_id = old_profile['login_id']
+                        # Now lets make sure that we don't have a login already for this person, and that they are now
                         # using the LOGIN as the default
-                        #
+                        # Edit user and make new email the unique_id
+                        try:
+                            user.edit(
+                                pseudonym={
+                                'unique_id': emailaddr.lower()                                    
+                                }
+                           )
+                        except CanvasException as ff1:
+                            PanicStop(str(ff1) + ' when editing user email address') 
                         userlogins = user.get_user_logins()
                         foundanotherlogin = False
                         for login in userlogins:
@@ -319,15 +331,11 @@ elif r.status_code == 200:
                         if configs['Debug'] == "True":
                             dmsgbody += 'CustomerID ' + str(newenrolls['CustomerID'][i]) + ' is associated with a different email\n'
                             dmsgbody += 'Changing ' + olduseremail + ' to ' + emailaddr 
-                        # no exception put in, going to assume that this works as we just GOT the user from Canvas
-                        user.edit(
-                                pseudonym={
-                                'unique_id': emailaddr.lower()                                    
-                                }
-                        ) 
+
                         try:
                             account.create_user_login(user={'id':user.id},
-                                                    login={'unquie_id':olduseremail.lower()})
+                                                    login={'unquie_id':olduseremail.lower()}
+                                                    )
                         # Create an additional LOGIN for the user using the OLD email address
                             logging.info('Created additional login for user id=' + user.id)
 
