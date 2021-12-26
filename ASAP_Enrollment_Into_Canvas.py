@@ -292,8 +292,8 @@ elif r.status_code == 200:
             #Now see if the sis_user_id is in there - New code as of 12-2021
                 if str(e) == "Not Found":
                     if configs['Debug'] == "True":
-                        print('Checking for SIS_ID ' + newenrolls['Person.Email'][i])
-                        dmsgbody += 'Checking for SIS_ID ' + str(newenrolls['CustomerID'][i])+ ' is associated with a different email than ' + newenrolls['Person.Email'][i] + ' in Canvas\n'
+                        print('Email not found, checking for SIS_ID ' + newenrolls['Person.Email'][i])
+                        dmsgbody += 'Email not found, checking for SIS_ID ' + str(newenrolls['CustomerID'][i])+ ' that has different email than ' + newenrolls['Person.Email'][i] + ' in Canvas\n'
                     logging.info('User not found with sis_login_id, looking if CustomerID and sis_user_id are the same.')
                     newusername = newenrolls['Person.FirstName'][i] + " " + newenrolls['Person.LastName'][i]
                     sis_user_id = newenrolls['CustomerID'][i]
@@ -302,7 +302,7 @@ elif r.status_code == 200:
                     #try and see if sis_user_id is in Canvas
                     try: 
                         user = canvas.get_user(newenrolls['CustomerID'][i],'sis_user_id')
-                        # We made it here, no errors thrown by Canvas
+                        # We made it here, no errors thrown by Canvas. So we found a SIS ID in Canvas that matches CustomerID
                         # User has changed their email, take existing email, add it as a login, and make the this new email the sis_login_id
                         #
                         olduseremail = user.login_id #get the current email address
@@ -345,8 +345,8 @@ elif r.status_code == 200:
                         if str(e2) == "Not Found":
                             #Ok, CustomerID is not the sis_user_id, so create the user
                             if configs['Debug'] == "True":
-                                print('SIS_ID Not found, Creating new user ' + newusername + " " + str(sis_user_id) + " " + emailaddr)
-                                dmsgbody += 'Creating user ' + newusername + " " + str(sis_user_id) + " " + emailaddr + '\n'
+                                print('SIS_ID Not found in Canvas, creating new user ' + newusername + " " + str(sis_user_id) + " " + emailaddr)
+                                dmsgbody += 'SIS_ID not in Canvas, creating new Canvas user ' + newusername + " " + str(sis_user_id) + " " + emailaddr + '\n'
                             user = account.create_user(
                                 user={
                                     'name': newusername,
