@@ -24,7 +24,7 @@ students = pd.read_sql_query('SELECT ALTSCH.ALTSC, STU.LN, STU.SEM, STU.GR, STU.
 canvas = Canvas(Canvas_API_URL,Canvas_API_KEY)
 account = canvas.get_account(1)
 group = canvas.get_group(10831,include=['users'])
-#print(students)
+print(students)
 
 # Add user to Canvas Group
 #for index, student in students.iterrows():
