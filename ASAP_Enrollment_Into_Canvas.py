@@ -400,7 +400,7 @@ elif r.status_code == 200:
                         emailCOVIDletter(newenrolls['Person.Email'][i])
             #Done sending letters
             #Finally ENROLL the student into the Canvas Class
-            totalnewstudents += 1
+            totalenrollments += 1
             enrollstudent(newenrolls['ScheduledEvent.EventCd'][i],
                         newenrolls['ScheduledEvent.Course.CourseName'][i],
                         newenrolls['EnrollmentStatusCd'][i],
