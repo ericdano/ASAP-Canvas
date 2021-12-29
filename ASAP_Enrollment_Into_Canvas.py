@@ -42,6 +42,8 @@ introletterfrom = configs['SMTPAddressFrom']
 dmsg['From'] = configs['SMTPAddressFrom']
 msg['To'] = configs['SendInfoEmailAddr']
 dmsg['To'] = configs['DebugEmailAddr']
+totalnewstudents = 0 # Variable to count new students added to Canvas
+totalenrollments = 0 # Variable to count new enrollments
 if configs['SendIntroLetters'] == "True":
     logging.info('Reading Previous Sent Intro Letters file')
     SentIntroLetters = pd.read_csv(Path(configs['IntroLetterPath']+configs['SentIntroLettersCSV']))
@@ -359,6 +361,7 @@ elif r.status_code == 200:
                                     'sis_user_id': sis_user_id
                                 }
                             )
+                            totalnewstudents += 1
                             msgbody = msgbody + 'Added new account ' + emailaddr + ' for ' + newusername + '\n'
                             logging.info('Created new account for '+ emailaddr + ' for ' + newusername)
                             if configs['NewUserCourse'] != '':
@@ -394,6 +397,7 @@ elif r.status_code == 200:
                         emailCOVIDletter(newenrolls['Person.Email'][i])
             #Done sending letters
             #Finally ENROLL the student into the Canvas Class
+            totalnewstudents += 1
             enrollstudent(newenrolls['ScheduledEvent.EventCd'][i],
                         newenrolls['ScheduledEvent.Course.CourseName'][i],
                         newenrolls['EnrollmentStatusCd'][i],
@@ -419,6 +423,8 @@ elif r.status_code == 200:
         logging.info('Writing last record to file')
         lastrec = newenrolls.tail(1)
         lastrec.to_csv(lastrunplacefilename)
+        msgbody += 'Added ' + str(totalnewstudents) + '\n'
+        msgbody += 'Added ' + str(totalenrollments) + ' guests to Canvas classes\n'
         if skippedbody == '':
             msgbody += '\n\nHappy Mickey\n'
         else:
