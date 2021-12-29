@@ -44,6 +44,8 @@ msg['To'] = configs['SendInfoEmailAddr']
 dmsg['To'] = configs['DebugEmailAddr']
 totalnewstudents = 0 # Variable to count new students added to Canvas
 totalenrollments = 0 # Variable to count new enrollments
+totalreturningstudents = 0
+
 if configs['SendIntroLetters'] == "True":
     logging.info('Reading Previous Sent Intro Letters file')
     SentIntroLetters = pd.read_csv(Path(configs['IntroLetterPath']+configs['SentIntroLettersCSV']))
@@ -289,6 +291,7 @@ elif r.status_code == 200:
                 #    newenrolls['ScheduledEvent.Course.CourseName'][i],
                 #    newenrolls['EnrollmentStatusCd'][i],
                 #    newenrolls['Person.Email'][i])
+                totalreturningstudents += 1
             except CanvasException as e:
             #Didn't find email address
             #Now see if the sis_user_id is in there - New code as of 12-2021
@@ -423,8 +426,9 @@ elif r.status_code == 200:
         logging.info('Writing last record to file')
         lastrec = newenrolls.tail(1)
         lastrec.to_csv(lastrunplacefilename)
-        msgbody += 'Added ' + str(totalnewstudents) + '\n'
-        msgbody += 'Added ' + str(totalenrollments) + ' guests to Canvas classes\n'
+        msgbody += 'Added ' + str(totalenrollments) + ' new Guests to classes.\n'
+        msgbody += 'Added ' + str(totalnewstudents) + ' new Guests to Canvas.\n'
+        msgbody += 'Had ' + str(totalreturningstudents) + ' Guests return to take classes.'
         if skippedbody == '':
             msgbody += '\n\nHappy Mickey\n'
         else:
