@@ -27,6 +27,7 @@ with open(confighome) as f:
 # Logging
 logfilename = Path.home() / ".ASAPCanvas" / configs['logfilename']
 logging.basicConfig(filename=str(logfilename), level=logging.INFO)
+skippedcoursescsvfilename = Path.home() / ".ASAPCanvas" / configs['SkippedCoursesCSV']
 lastrunplacefilename = Path.home() / ".ASAPCanvas" / configs['ASAPlastposfile']
 logging.info('Loaded config file and logfile started')
 #-----Canvas Info
@@ -252,7 +253,7 @@ elif r.status_code == 200:
     if configs['Debug'] == "True":
         dmsgbody += 'Loading last record processed....\n'
     #Load Skipped Classes
-    SkippedCourses = pd.read_csv(configs['SkippedCoursesCSV'])
+    SkippedCourses = pd.read_csv(skippedcoursescsvfilename)
     logging.ingo('Loading Skipped List CSV')
     #load starting record position
     lastrunplace = pd.read_csv(lastrunplacefilename)
