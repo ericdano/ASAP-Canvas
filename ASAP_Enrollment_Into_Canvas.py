@@ -254,7 +254,7 @@ elif r.status_code == 200:
         dmsgbody += 'Loading last record processed....\n'
     #Load Skipped Classes
     SkippedCourses = pd.read_csv(skippedcoursescsvfilename)
-    logging.ingo('Loading Skipped List CSV')
+    logging.info('Loading Skipped List CSV')
     #load starting record position
     lastrunplace = pd.read_csv(lastrunplacefilename)
     logging.info('Last place was ' + str(lastrunplace))
