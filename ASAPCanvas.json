@@ -15,7 +15,7 @@
   "Debug": "True",
   "DebugEmailAddr": "addresstosenddebugsto",
   "NewUserCourse": "767",
-  "SkipCoursesCSV": "SkippedCourses.csv",
+  "SkippedCoursesCSV": "SkippedCourses.csv",
   "SMTPAddressFrom": "noreply@domain.com",
   "SMTPStatusMessage": "ASAP-Canvas Event Log",
   "SMTPServerAddress": "",

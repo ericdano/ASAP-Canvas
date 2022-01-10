@@ -251,6 +251,9 @@ elif r.status_code == 200:
     logging.info('Getting last record we looked at')
     if configs['Debug'] == "True":
         dmsgbody += 'Loading last record processed....\n'
+    #Load Skipped Classes
+    SkippedCourses = pd.read_csv(configs['SkippedCoursesCSV'])
+    logging.ingo('Loading Skipped List CSV')
     #load starting record position
     lastrunplace = pd.read_csv(lastrunplacefilename)
     logging.info('Last place was ' + str(lastrunplace))
@@ -260,7 +263,7 @@ elif r.status_code == 200:
         dmsgbody += "Looking for enrollments....\n"
     for i in newenrolls.index:
         #Look for classes we don't do canvas for, and skip
-        if not newenrolls['ScheduledEvent.EventCd'][i] in configs['SkipCourses']:
+        if not newenrolls['ScheduledEvent.EventCd'][i] in SkippedCourses.CourseCode:
             # Check to make sure we have an email
             if (newenrolls['Person.Email'][i] == ''):
                 PanicStop('Email address is empty!!!')
