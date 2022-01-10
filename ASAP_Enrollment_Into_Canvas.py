@@ -255,6 +255,8 @@ elif r.status_code == 200:
     #Load Skipped Classes
     SkippedCourses = pd.read_csv(skippedcoursescsvfilename)
     logging.info('Loading Skipped List CSV')
+    if configs['Debug'] == "True":
+        dmsgbody += 'Loading CSV of Classes to skip enrolling into Canvas....\n'
     #load starting record position
     lastrunplace = pd.read_csv(lastrunplacefilename)
     logging.info('Last place was ' + str(lastrunplace))
