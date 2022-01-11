@@ -266,6 +266,8 @@ elif r.status_code == 200:
         dmsgbody += "Looking for enrollments....\n"
     for i in newenrolls.index:
         #Look for classes we don't do canvas for, and skip
+        print(newenrolls['ScheduledEvent.EventCd'][i])
+        logging.info('Seeing if ' + newenrolls['ScheduledEvent.EventCd'][i] + ' is in skipped CSV')
         if not newenrolls['ScheduledEvent.EventCd'][i] in SkippedCourses.CourseCode:
             # Check to make sure we have an email
             if (newenrolls['Person.Email'][i] == ''):
