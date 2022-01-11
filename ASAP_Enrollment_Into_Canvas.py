@@ -255,6 +255,7 @@ elif r.status_code == 200:
     #Load Skipped Classes
     SkippedCourses = pd.read_csv(skippedcoursescsvfilename)
     logging.info('Loading Skipped List CSV')
+    print(SkippedCourses)
     if configs['Debug'] == "True":
         dmsgbody += 'Loading CSV of Classes to skip enrolling into Canvas....\n'
     #load starting record position
@@ -268,7 +269,7 @@ elif r.status_code == 200:
         #Look for classes we don't do canvas for, and skip
         print(newenrolls['ScheduledEvent.EventCd'][i])
         logging.info('Seeing if ' + newenrolls['ScheduledEvent.EventCd'][i] + ' is in skipped CSV')
-        if not newenrolls['ScheduledEvent.EventCd'][i] in SkippedCourses.CourseCode:
+        if not (newenrolls['ScheduledEvent.EventCd'][i] in SkippedCourses['CourseCode'].unique()):
             # Check to make sure we have an email
             if (newenrolls['Person.Email'][i] == ''):
                 PanicStop('Email address is empty!!!')
