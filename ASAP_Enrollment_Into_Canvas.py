@@ -1,5 +1,5 @@
 import pandas as pd
-import requests, json, logging, smtplib, datetime, smtplib
+import requests, json, logging, smtplib, datetime
 from canvasapi import Canvas
 from canvasapi.exceptions import CanvasException
 from pathlib import Path
