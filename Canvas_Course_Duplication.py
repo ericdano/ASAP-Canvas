@@ -4,7 +4,7 @@ from canvasapi import Canvas
 from canvasapi.exceptions import CanvasException
 from pathlib import Path
 from email.message import EmailMessage
-# Useage C:\python Canvas_Course_Duplication.py nameofcsv.csv
+# Useage C:\python Canvas_Course_Duplication.py nameofcsv.csv "term"
 #
 # This program reads a CSV file with the fields of
 # NewSIS_ID, CurrentSIS_ID, CourseName
