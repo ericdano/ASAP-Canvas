@@ -58,8 +58,6 @@ def copy_to_new_course():
         new_course.enroll_user(user.id, "TeacherEnrollment", enrollment={"enrollment_state": "active"})
 
 logging.info('Connecting to Canvas')
-if configs['Debug'] == "True":
-    dmsgbody = dmsgbody + 'Connecting to Canvas....\n'
 canvas = Canvas(Canvas_API_URL, Canvas_API_KEY)
 account = canvas.get_account(1)
 #get get_enrollment_terms
@@ -96,8 +94,4 @@ else:
             if str(e) == "Not Found":
                print('Error, this only copies content from old classes to new ones')
                exit()
-s = smtplib.SMTP(configs['SMTPServerAddress'])
-if configs['Debug'] == "True":
-    print("All done!")
-    dmsg.set_content(dmsgbody)
-    s.send_message(dmsg)
+
