@@ -20,7 +20,6 @@ if len(sys.argv) < 2:
     print('CSV file should be have headers of NewSIS_ID, CurrentSIS_ID')
     exit(0)
 csvfilename = sys.argv[1]
-CurrentCanvasTerm = sys.argv[2]
 #load configs
 home = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
 confighome = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
