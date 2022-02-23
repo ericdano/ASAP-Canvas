@@ -65,7 +65,8 @@ for i in asapcoursestocopy.index:
     try:
         asapclass = canvas.get_course(asapcoursestocopy['NewSIS_ID'][i],use_sis_id=True)
         logging.info('Course already in Canvas.....resetting it......')
-        asapclass.reset_content()
+        print('Course already in Canvas.....resetting it......')
+        asapclass.reset()
         copy_to_new_course()
     except CanvasException as e:
         if str(e) == "Not Found":
