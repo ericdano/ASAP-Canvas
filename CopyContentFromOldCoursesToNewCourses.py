@@ -7,14 +7,10 @@ from email.message import EmailMessage
 # Useage C:\python CopyContentFromOldCoursesToNewCourses.py nameofcsv.csv "term"
 #
 # This program reads a CSV file with the fields of
-# NewSIS_ID, CurrentSIS_ID\
-# It will create a new course with the SIS_ID from the CSV or use a course that already has the SIS_ID
-# and copy the CurrentSIS_ID course contents to the new course
-# and enroll the CurrentSIS_ID course teacher in the new course as the teacher
-# version .01
-# Created to help more easily roll over classes to a new term for Acalanes Adult Ed
+# NewSIS_ID, CurrentSIS_ID
 #
-# New classes are created using a Term defined here set to what it is in your Canvas Instance
+# It will then BLANK out the course, and then copy the course (CurrentSIS_ID) to the new course (NewSIS_ID)
+#
 if len(sys.argv) < 2:
     print('Script needs two arguments: python name.csv "term"')
     print('CSV file should be have headers of NewSIS_ID, CurrentSIS_ID')
