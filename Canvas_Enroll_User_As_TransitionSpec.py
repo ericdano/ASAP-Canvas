@@ -28,12 +28,12 @@ try:
     try:
         user = canvas.get_user(teacheremail,'sis_login_id')
         try:
-            enrollment = asapclass.enroll_user(user.id, "TeacherEnrollment",
+            enrollment = asapclass.enroll_user(user.id, "TaEnrollment",
                             enrollment = {
                                 "sis_course_id": coursesisid,
                                 "notify": True,
                                 "enrollment_state": "active",
-                                "role_id": 11
+                                "role_id": 16
                             }
                         )
             print('Enrolled Transition Specialist in class')

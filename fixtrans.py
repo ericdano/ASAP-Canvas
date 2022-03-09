@@ -8,7 +8,6 @@ from pathlib import Path
 # args ->python Enroll_User_As_TA_ALL_Classes.py 'Fall 2021' me@me.com
 #
 termidlookingfor = sys.argv[1]
-teacheremail = sys.argv[2]
 #load configs
 home = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
 confighome = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
@@ -22,7 +21,6 @@ canvas = Canvas(Canvas_API_URL, Canvas_API_KEY)
 account = canvas.get_account(1)
 column_names = ["courseid","course_sis_id","coursename"]
 df = pd.DataFrame(columns = column_names)
-print(teacheremail)
 courses=account.get_courses(include=['term','sis_term_id','sis_course_id'])
 print('Gathering Courses in Term')
 for i in courses:
@@ -35,30 +33,15 @@ for index, row in df.iterrows():
     bid = row["courseid"]
     bname = row["coursename"]
     bsiscourseid = row["course_sis_id"]
-    print('Trying to enroll->',teacheremail,' as Transition Specialist in class ',bname,'(',bid,') ','(',bsiscourseid,')')
     try:
         asapclass = canvas.get_course(bsiscourseid,use_sis_id=True)
-        try:
-            user = canvas.get_user(teacheremail,'sis_login_id')
-            try:
-                enrollment = asapclass.enroll_user(user.id, "TaEnrollment",
-                            enrollment = {
-                                "sis_course_id": bsiscourseid,
-                                "notify": True,
-                                "enrollment_state": "active",
-                                "role_id": 16
-                            }
-                        )
-                print('Enrolled ',teacheremail,' as Transition Specialist in class ',bname,'(',bid,') ','(',bsiscourseid,')')
-            except CanvasException as e1:
-                print('Error enrolling user as Transition Specialist')
-                print(e1)
-        except CanvasException as e:
-            if str(e) == "Not Found":
-                print('Error getting user')
-                print(str(e))
+        enrollments = asapclass.get_enrollments(type='TeacherEnrollment')
+        for stu in enrollments:
+            if stu.user_id == 1196:
+                print('Found user->' + str(stu.user_id) +' in class ' + bname)
+                stu.deactivate(task='delete')
             else:
-                print(e)
+                print('Found OTHER user->' + str(stu.user_id) +' in class ' + bname)
     except CanvasException as e2:
         if str(e2) == "Not Found":
             print('Error finding course')
