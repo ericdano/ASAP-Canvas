@@ -348,7 +348,7 @@ elif r.status_code == 200:
 
                         try:
                             account.create_user_login(user={'id':user.id},
-                                                    login={'unquie_id':olduseremail.lower()}
+                                                    login={'unique_id':olduseremail.lower()}
                                                     )
                         # Create an additional LOGIN for the user using the OLD email address
                             logging.info('Created additional login for user id=' + str(user.id))
