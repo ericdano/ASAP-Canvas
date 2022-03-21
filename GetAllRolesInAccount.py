@@ -5,6 +5,7 @@ from canvasapi.exceptions import CanvasException
 from pathlib import Path
 #
 #load configs
+# Simple script to list all the roles a user can be assigned in Canvas
 home = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
 confighome = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
 with open(confighome) as f:

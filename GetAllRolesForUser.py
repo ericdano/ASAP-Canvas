@@ -5,6 +5,10 @@ from canvasapi.exceptions import CanvasException
 from pathlib import Path
 #
 #load configs
+# Script to get all roles for a user
+# Useage >python getallrolesforuser.py user@gmail.com
+#
+#
 home = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
 confighome = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
 with open(confighome) as f:
