@@ -4,7 +4,7 @@ from canvasapi import Canvas
 from canvasapi.exceptions import CanvasException
 from pathlib import Path
 from email.message import EmailMessage
-# Useage C:\python Canvas_Course_Duplication.py nameofcsv.csv
+# Useage C:\python Create_Canvas_Course_From_Template nameofcsv.csv 'Fall 2020'
 #
 
 # This takes a CSV file of new course codes and creates generic templates for enrollment purposes
