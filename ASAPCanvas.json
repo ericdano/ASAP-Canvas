@@ -7,6 +7,7 @@
   "ASAPpassword": "",
   "ASAPAPIKey": "",
   "ASAPapiurl": "https://api.asapconnected.com/api/Enrollments?includeAttendance=false&classStartDate=01-01-2021&classEndDate=07-19-2021&enrollmentStartDate=01-01-2021&enrollmentEndDate=07-19-2021",
+  "logserveraddress": "",
   "logfilepath": ".ASAPCanvas",
   "logfilename": "canvasASAP.log",
   "ASAPlastposfile": "lastrecordasap.csv",
