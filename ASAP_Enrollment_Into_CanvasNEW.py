@@ -339,7 +339,7 @@ def mainloop():
             thelogger.info('ASAP_Enrollment_Into_Canvas->Looking if we have sent COVID letter to person...')
             senttheCletter = SentCOVIDLetters[SentCOVIDLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
             if senttheCletter.empty:
-                thelogger.info('ASAP_Enrollment_Into_Canvas->Going to send COVID letter...."'
+                thelogger.info('ASAP_Enrollment_Into_Canvas->Going to send COVID letter....')
                 #pass email to send optional enrollment welcome letter
                 emailCOVIDletter(newenrolls['Person.Email'][i])
     #Done sending letters
