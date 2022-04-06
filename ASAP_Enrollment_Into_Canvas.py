@@ -272,7 +272,7 @@ elif r.status_code == 200:
     lastrunplace = pd.read_csv(lastrunplacefilename)
     thelogger.info('ASAP_Enrollment_Into_Canvas->Last place was ' + str(lastrunplace))
     newenrolls = results[results['EventEnrollmentID'] > lastrunplace['EventEnrollmentID'][0]]
-    thelogger.info("Looking for enrollments")
+    thelogger.info('ASAP_Enrollment_Into_Canvas->Looking for enrollments')
     if configs['Debug'] == "True":
         dmsgbody += "Looking for enrollments....\n"
     for i in newenrolls.index:
@@ -291,7 +291,7 @@ elif r.status_code == 200:
                     dmsgbody += newenrolls['Person.Email'][i] + ' is in Canvas\n'
                 # Check to see if we are sending welcome emails to this semester's students. Purely optional
                 if configs['SendIntroLetters'] == "True":
-                    thelogger.info("Looking if we have sent intro letter to person...")
+                    thelogger.info('ASAP_Enrollment_Into_Canvas->Looking if we have sent intro letter to person...')
                     senttheletter = SentIntroLetters[SentIntroLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
                     if senttheletter.empty:
                         thelogger.info("Going to send intro letter....")
@@ -300,10 +300,10 @@ elif r.status_code == 200:
                 # Check to see if we are sending out COVID vaccinated status emails
                 if configs['SendCOVIDLetters'] == "True":
                     # Check to see if we are sending welcome emails to this semester's students. Purely optional
-                    thelogger.info("Looking if we have sent COVID letter to person...")
+                    thelogger.info('ASAP_Enrollment_Into_Canvas->Looking if we have sent COVID letter to person...')
                     senttheCletter = SentCOVIDLetters[SentCOVIDLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
                     if senttheCletter.empty:
-                        thelogger.info("Going to send COVID letter....")
+                        thelogger.info('ASAP_Enrollment_Into_Canvas->Going to send COVID letter....')
                         #pass email to send optional enrollment welcome letter
                         emailCOVIDletter(newenrolls['Person.Email'][i])
                 #enrollstudent(newenrolls['ScheduledEvent.EventCd'][i],
@@ -434,8 +434,10 @@ elif r.status_code == 200:
     if msgbody == '':
         if skippedbody == '':
             msgbody = 'No new enrollments or drops for this iteration of ASAP-Canvas script\n\nSad Mickey\n'
+            thelogger.info('ASAP_Enrollment_Into_Canvas->No new enrollments this script run.....sad mickey')
             lastrunplace.to_csv(lastrunplacefilename)
             dmsgbody = dmsgbody + 'Wrote previous last record back to file'
+            thelogger.info('ASAP_Enrollment_Into_Canvas->Writing last record to file')
         else:
             thelogger.info('ASAP_Enrollment_Into_Canvas->Writing last record to file')
             lastrec = newenrolls.tail(1)
@@ -456,7 +458,9 @@ elif r.status_code == 200:
         dmsgbody += 'wrote NEW last record to file'
     msg.set_content(msgbody)
     s.send_message(msg)
+    thelogger.info('ASAP_Enrollment_Into_Canvas->Sent Status emails')
 if configs['Debug'] == "True":
     print("All done!")
     dmsg.set_content(dmsgbody)
     s.send_message(dmsg)
+    thelogger.info('ASAP_Enrollment_Into_Canvas->Sent Debug emails')
