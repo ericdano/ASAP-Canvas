@@ -7,6 +7,8 @@ from email.message import EmailMessage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
+from logging.handlers import SysLogHandler
+
 # ASAP Connected to Canvas importer version .07
 # This program grabs data from ASAP connected's API, dones so light processing,
 # and creates new users in Canvas, adds new users to a tutorial class in Canvas,
@@ -25,11 +27,19 @@ confighome = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
 with open(confighome) as f:
   configs = json.load(f)
 # Logging
-logfilename = Path.home() / ".ASAPCanvas" / configs['logfilename']
-logging.basicConfig(filename=str(logfilename), level=logging.INFO)
+if configs['logserveraddress'] is None:
+    logfilename = Path.home() / ".ASAPCanvas" / configs['logfilename']
+    thelogger = logging.getLogger('MyLogger')
+    thelogger.basicConfig(filename=str(logfilename), level=thelogger.info)
+else:
+    thelogger = logging.getLogger('MyLogger')
+    thelogger.setLevel(logging.DEBUG)
+    handler = logging.handlers.SysLogHandler(address = (configs['logserveraddress'],514))
+    thelogger.addHandler(handler)
+
 skippedcoursescsvfilename = Path.home() / ".ASAPCanvas" / configs['SkippedCoursesCSV']
 lastrunplacefilename = Path.home() / ".ASAPCanvas" / configs['ASAPlastposfile']
-logging.info('Loaded config file and logfile started')
+thelogger.info('ASAP_Enrollment_Into_Canvas->Loaded config file and logfile started')
 #-----Canvas Info
 Canvas_API_URL = configs['CanvasAPIURL']
 Canvas_API_KEY = configs['CanvasAPIKey']
@@ -48,10 +58,10 @@ totalenrollments = 0 # Variable to count new enrollments
 totalreturningstudents = 0
 
 if configs['SendIntroLetters'] == "True":
-    logging.info('Reading Previous Sent Intro Letters file')
+    thelogger.info('ASAP_Enrollment_Into_Canvas->Reading Previous Sent Intro Letters file')
     SentIntroLetters = pd.read_csv(Path(configs['IntroLetterPath']+configs['SentIntroLettersCSV']))
 if configs['SendCOVIDLetters'] == "True":
-    logging.info('Reading Previous Sent COVID Letters file')
+    thelogger.info('ASAP_Enrollment_Into_Canvas->Reading Previous Sent COVID Letters file')
     SentCOVIDLetters = pd.read_csv(Path(configs['COVIDLetterPath']+configs['SentCOVIDLettersCSV']))
 #
 #
@@ -63,7 +73,7 @@ def Set_globals():
 def PanicStop(panicmsgstr):
     global msgbody, skippedbody, dmsgbody
     # This gets called when we get an error we excepted for
-    logging.info('Canvas error ' + panicmsgstr + ' Stopping imports. ')
+    thelogger.info('ASAP_Enrollment_Into_Canvas->Canvas error ' + panicmsgstr + ' Stopping imports. ')
     print('Canvas error ' + panicmsgstr + ' Stopping imports.')
     s = smtplib.SMTP(configs['SMTPServerAddress'])
     msgbody += 'Panic!! Stopping imports on error ' + panicmsgstr +' \n\nPanic!!!\n'
@@ -76,7 +86,7 @@ def PanicStop(panicmsgstr):
 #Looks for a CVS file of emails previously sent out to not send out the same letter again
 def emailCOVIDletter(lettertoemail):
     global SentCOVIDLetters, msgbody, dmsgbody
-    logging.info('Prepping to send COVID letter from AE')
+    thelogger.info('ASAP_Enrollment_Into_Canvas->Prepping to send COVID letter from AE')
     IntroLetterRoot = MIMEMultipart('related')
     IntroLetterRoot['Subject'] = 'Voluntary Vaccination Verification'
     IntroLetterRoot['From'] = configs['SMTPAddressFrom']
@@ -86,7 +96,7 @@ def emailCOVIDletter(lettertoemail):
     IntroLetterRoot.attach(IntroLetterAlt)
     IntroLetterText = MIMEText('This is the alternative plain text message.')
     IntroLetterAlt.attach(IntroLetterText)
-    logging.info('Reading Previous Sent COVID Letters file')
+    thelogger.info('ASAP_Enrollment_Into_Canvas->Reading Previous Sent COVID Letters file')
     messagepath = Path(configs['COVIDLetterPath']+configs['COVIDLetterFile'])
     introfp1 = open(messagepath,'r')
     IntroLetterText = MIMEText(introfp1.read(),'html')
@@ -98,7 +108,7 @@ def emailCOVIDletter(lettertoemail):
     smtpintroletter.quit()
     SentCOVIDLetters = SentCOVIDLetters.append({'Email': lettertoemail},ignore_index=True)
     SentCOVIDLetters.to_csv(Path(configs['COVIDLetterPath']+configs['SentCOVIDLettersCSV']), index=False)
-    logging.info('COVID letter sent to ' + lettertoemail)
+    thelogger.info('ASAP_Enrollment_Into_Canvas->COVID letter sent to ' + lettertoemail)
     if configs['Debug'] == "True":
         dmsgbody += 'Added ' + lettertoemail + 'to sent COVID CSV file.\n'
         dmsgbody += 'Sent COVID letter to ' + lettertoemail + '\n'
@@ -108,7 +118,7 @@ def emailCOVIDletter(lettertoemail):
 #Looks for a CVS file of emails previously sent out to not send out the same letter again
 def emailintroletter(lettertoemail):
     global SentIntroLetters, msgbody, dmsgbody
-    logging.info('Prepping to send intro letter from AE')
+    thelogger.info('ASAP_Enrollment_Into_Canvas->Prepping to send intro letter from AE')
     IntroLetterRoot = MIMEMultipart('related')
     IntroLetterRoot['Subject'] = 'Acalanes Adult Education Spring/Summer 2021 Enrollment'
     IntroLetterRoot['From'] = configs['SMTPAddressFrom']
@@ -118,7 +128,7 @@ def emailintroletter(lettertoemail):
     IntroLetterRoot.attach(IntroLetterAlt)
     IntroLetterText = MIMEText('This is the alternative plain text message.')
     IntroLetterAlt.attach(IntroLetterText)
-    logging.info('Reading Previous Sent Intro Letters file')
+    thelogger.info('ASAP_Enrollment_Into_Canvas->Reading Previous Sent Intro Letters file')
     messagepath = Path(configs['IntroLetterPath']+configs['IntroLetterFile'])
     introfp1 = open(messagepath,'r')
     IntroLetterText = MIMEText(introfp1.read(),'html')
@@ -136,7 +146,7 @@ def emailintroletter(lettertoemail):
     smtpintroletter.quit()
     SentIntroLetters = SentIntroLetters.append({'Email': lettertoemail},ignore_index=True)
     SentIntroLetters.to_csv(Path(configs['IntroLetterPath']+configs['SentIntroLettersCSV']), index=False)
-    logging.info('Intro letter sent to ' + lettertoemail)
+    thelogger.info('ASAP_Enrollment_Into_Canvas->Intro letter sent to ' + lettertoemail)
     if configs['Debug'] == "True":
         dmsgbody += 'Added ' + lettertoemail + 'to sent CSV file.\n'
         dmsgbody += 'Sent intro letter to ' + lettertoemail + '\n'
@@ -148,16 +158,16 @@ def enrollstudent(coursecodetoenroll,coursetoenrollname,enrollmentstatuscd,stude
     global msgbody, dmsgbody
     # the globals are for the end email messages
     if configs['Debug'] == "True":
-        logging.info('Looking at ' + studentemailaddress + ' enrollment status for ID ' +  coursecodetoenroll)
+        thelogger.info('ASAP_Enrollment_Into_Canvas->Looking at ' + studentemailaddress + ' enrollment status for ID ' +  coursecodetoenroll)
         dmsgbody += 'Looking at ' + studentemailaddress + ' enrollment status for ID ' +  coursecodetoenroll + '\n'
-    logging.info('Found user - look at enrollments')
+    thelogger.info('ASAP_Enrollment_Into_Canvas->Found user - look at enrollments')
     try:
         course = canvas.get_course(coursecodetoenroll,'sis_course_id')
-        logging.info('EnrollmentStatusCd field is ' + enrollmentstatuscd)
+        thelogger.info('ASAP_Enrollment_Into_Canvas->EnrollmentStatusCd field is ' + enrollmentstatuscd)
         if configs['Debug'] == 'True':
             dmsgbody += 'Field is ' + enrollmentstatuscd + '\n'
         if enrollmentstatuscd == "DROPPED":
-            logging.info('Dropping ' + studentemailaddress)
+            thelogger.info('ASAP_Enrollment_Into_Canvas->Dropping ' + studentemailaddress)
             if configs['Debug'] == 'True':
                 dmsgbody += 'Dropping ' + studentemailaddress +'\n'
             enrollments = course.get_enrollments(type='StudentEnrollment')
@@ -167,7 +177,7 @@ def enrollstudent(coursecodetoenroll,coursetoenrollname,enrollmentstatuscd,stude
                 if stu.user_id == user.id:
                     lookfordelete = True
                     stu.deactivate(task='delete')
-                    logging.info('Deleted student from ' + coursetoenrollname)
+                    thelogger.info('ASAP_Enrollment_Into_Canvas->Deleted student from ' + coursetoenrollname)
                     msgbody += 'Dropped ' + studentemailaddress + ' from ' + coursetoenrollname +  ' (' + coursecodetoenroll + ') \n'
                     if configs['Debug'] == "True":
                         dmsgbody += 'Dropped ' + studentemailaddress + ' from ' + coursetoenrollname +  ' (' + coursecodetoenroll + ') \n'
@@ -182,13 +192,13 @@ def enrollstudent(coursecodetoenroll,coursetoenrollname,enrollmentstatuscd,stude
                                                 "enrollment_state": "active"
                                                 }
                                             )
-            logging.info('Enrolled ' + studentemailaddress + ' in ' + coursetoenrollname)
+            thelogger.info('ASAP_Enrollment_Into_Canvas->Enrolled ' + studentemailaddress + ' in ' + coursetoenrollname)
             msgbody += 'Enrolled ' + studentemailaddress + ' in ' + coursetoenrollname + ' (' + coursecodetoenroll + ') \n'
             if configs['Debug'] == "True":
                 dmsgbody += 'Enrolled ' + studentemailaddress + ' in ' + coursetoenrollname + ' (' + coursecodetoenroll + ') \n'
     except CanvasException as ec:
                 #It all starts with figuring out if the user is in Canvas and enroll in tutorial course
-        logging.info('Canvas error ' + str(ec) + ' Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports. ')
+        thelogger.info('ASAP_Enrollment_Into_Canvas->Canvas error ' + str(ec) + ' Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports. ')
         print('Canvas error ' + str(ec) + ' Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports.')
         s = smtplib.SMTP(configs['SMTPServerAddress'])
         msgbody += 'Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports.\n\n\nPanic!!!\n'
@@ -203,24 +213,24 @@ password = configs['ASAPpassword']
 apikey = configs['ASAPAPIKey']
 url = configs['ASAPurl']
 headers = {'Authorization' : 'user='+userid+'&organizationId='+orgid+'&password='+password+'&apiKey='+apikey}
-logging.info('Getting ASAP Key')
+thelogger.info('ASAP_Enrollment_Into_Canvas->Getting ASAP Key')
 Set_globals()
 r = requests.get(url,headers = headers)
 if r.status_code == 404:
-    logging.info('Failed to get ASAP Key')
+    thelogger.info('ASAP_Enrollment_Into_Canvas->Failed to get ASAP Key')
     if configs['Debug'] == "True":
         print('Failed to connect to ASAP')
-        logging.info('Failed to get ASAP Key')
+        thelogger.info('ASAP_Enrollment_Into_Canvas->Failed to get ASAP Key')
         dmsgbody += 'Failed to get ASAP Key....\n'
 elif r.status_code == 200:
-    logging.info('Got ASAP Key')
+    thelogger.info('ASAP_Enrollment_Into_Canvas->Got ASAP Key')
     if configs['Debug'] == "True":
         dmsgbody += 'Got ASAP Key....\n'
     accesstoken = r.json()
-    logging.info('Key is ' + accesstoken)
+    thelogger.info('ASAP_Enrollment_Into_Canvas->Key is ' + accesstoken)
     url2 = configs['ASAPapiurl']
     header = {'asap_accesstoken' : accesstoken}
-    logging.info('Getting data from ASAP')
+    thelogger.info('ASAP_Enrollment_Into_Canvas->Getting data from ASAP')
     if configs['Debug'] == "True":
         dmsgbody += 'Getting JSON from ASAP....\n'
     r2 = requests.get(url2,headers = header)
@@ -244,31 +254,31 @@ elif r.status_code == 200:
     # Person.FirstName is their FirstName
     # Person.LastName is their LastName
     # Load last record processed
-    logging.info('Connecting to Canvas')
+    thelogger.info('ASAP_Enrollment_Into_Canvas->Connecting to Canvas')
     if configs['Debug'] == "True":
         dmsgbody += 'Connecting to Canvas....\n'
     canvas = Canvas(Canvas_API_URL, Canvas_API_KEY)
     account = canvas.get_account(1)
-    logging.info('Getting last record we looked at')
+    thelogger.info('ASAP_Enrollment_Into_Canvas->Getting last record we looked at')
     if configs['Debug'] == "True":
         dmsgbody += 'Loading last record processed....\n'
     #Load Skipped Classes
     SkippedCourses = pd.read_csv(skippedcoursescsvfilename)
-    logging.info('Loading Skipped List CSV')
+    thelogger.info('ASAP_Enrollment_Into_Canvas->Loading Skipped List CSV')
     print(SkippedCourses)
     if configs['Debug'] == "True":
         dmsgbody += 'Loading CSV of Classes to skip enrolling into Canvas....\n'
     #load starting record position
     lastrunplace = pd.read_csv(lastrunplacefilename)
-    logging.info('Last place was ' + str(lastrunplace))
+    thelogger.info('ASAP_Enrollment_Into_Canvas->Last place was ' + str(lastrunplace))
     newenrolls = results[results['EventEnrollmentID'] > lastrunplace['EventEnrollmentID'][0]]
-    logging.info("Looking for enrollments")
+    thelogger.info("Looking for enrollments")
     if configs['Debug'] == "True":
         dmsgbody += "Looking for enrollments....\n"
     for i in newenrolls.index:
         #Look for classes we don't do canvas for, and skip
         print(newenrolls['ScheduledEvent.EventCd'][i])
-        logging.info('Seeing if ' + newenrolls['ScheduledEvent.EventCd'][i] + ' is in skipped CSV')
+        thelogger.info('ASAP_Enrollment_Into_Canvas->Seeing if ' + newenrolls['ScheduledEvent.EventCd'][i] + ' is in skipped CSV')
         if not (newenrolls['ScheduledEvent.EventCd'][i] in SkippedCourses['CourseCode'].unique()):
             # Check to make sure we have an email
             if (newenrolls['Person.Email'][i] == ''):
@@ -276,24 +286,24 @@ elif r.status_code == 200:
             # Now look up the user by email
             try:
                 user = canvas.get_user(newenrolls['Person.Email'][i],'sis_login_id')
-                logging.info(newenrolls['Person.Email'][i] + " is in Canvas")
+                thelogger.info(newenrolls['Person.Email'][i] + " is in Canvas")
                 if configs['Debug'] == "True":
                     dmsgbody += newenrolls['Person.Email'][i] + ' is in Canvas\n'
                 # Check to see if we are sending welcome emails to this semester's students. Purely optional
                 if configs['SendIntroLetters'] == "True":
-                    logging.info("Looking if we have sent intro letter to person...")
+                    thelogger.info("Looking if we have sent intro letter to person...")
                     senttheletter = SentIntroLetters[SentIntroLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
                     if senttheletter.empty:
-                        logging.info("Going to send intro letter....")
+                        thelogger.info("Going to send intro letter....")
                         #pass email to send optional enrollment welcome letter
                         emailintroletter(newenrolls['Person.Email'][i])
                 # Check to see if we are sending out COVID vaccinated status emails
                 if configs['SendCOVIDLetters'] == "True":
                     # Check to see if we are sending welcome emails to this semester's students. Purely optional
-                    logging.info("Looking if we have sent COVID letter to person...")
+                    thelogger.info("Looking if we have sent COVID letter to person...")
                     senttheCletter = SentCOVIDLetters[SentCOVIDLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
                     if senttheCletter.empty:
-                        logging.info("Going to send COVID letter....")
+                        thelogger.info("Going to send COVID letter....")
                         #pass email to send optional enrollment welcome letter
                         emailCOVIDletter(newenrolls['Person.Email'][i])
                 #enrollstudent(newenrolls['ScheduledEvent.EventCd'][i],
@@ -308,7 +318,7 @@ elif r.status_code == 200:
                     if configs['Debug'] == "True":
                         print('Email not found, checking for SIS_ID ' + newenrolls['Person.Email'][i])
                         dmsgbody += 'Email not found, checking for SIS_ID ' + str(newenrolls['CustomerID'][i])+ ' that has different email than ' + newenrolls['Person.Email'][i] + ' in Canvas\n'
-                    logging.info('User not found with sis_login_id, looking if CustomerID and sis_user_id are the same.')
+                    thelogger.info('ASAP_Enrollment_Into_Canvas->User not found with sis_login_id, looking if CustomerID and sis_user_id are the same.')
                     newusername = newenrolls['Person.FirstName'][i] + " " + newenrolls['Person.LastName'][i]
                     sis_user_id = newenrolls['CustomerID'][i]
                     sortname = newenrolls['Person.LastName'][i] + ", " + newenrolls['Person.FirstName'][i]
@@ -340,8 +350,8 @@ elif r.status_code == 200:
                             if login.unique_id == olduseremail:
                                 foundanotherlogin=True
                                 print('Found ASAPs current default email '+ emailaddr.lower() + 'as a login')
-                                logging.info('Found ASAPs current default email ' + emailaddr.lower() + 'as a login')
-                        logging.info('Seems that we have someone ' + str(newenrolls['CustomerID'][i]) + ' who changed their ASAP email, so lets change it in Canvas and add the old one as a Login for them\n')
+                                thelogger.info('ASAP_Enrollment_Into_Canvas->Found ASAPs current default email ' + emailaddr.lower() + 'as a login')
+                        thelogger.info('ASAP_Enrollment_Into_Canvas->Seems that we have someone ' + str(newenrolls['CustomerID'][i]) + ' who changed their ASAP email, so lets change it in Canvas and add the old one as a Login for them\n')
                         if configs['Debug'] == "True":
                             dmsgbody += 'CustomerID ' + str(newenrolls['CustomerID'][i]) + ' is associated with a different email\n'
                             dmsgbody += 'Changing ' + olduseremail + ' to ' + emailaddr 
@@ -351,7 +361,7 @@ elif r.status_code == 200:
                                                     login={'unique_id':olduseremail.lower()}
                                                     )
                         # Create an additional LOGIN for the user using the OLD email address
-                            logging.info('Created additional login for user id=' + str(user.id))
+                            thelogger.info('ASAP_Enrollment_Into_Canvas->Created additional login for user id=' + str(user.id))
 
                         except CanvasException as e11:
                             PanicStop(str(e11) + ' when created additional login for user')
@@ -375,9 +385,9 @@ elif r.status_code == 200:
                             )
                             totalnewstudents += 1
                             msgbody = msgbody + 'Added new account ' + emailaddr + ' for ' + newusername + '\n'
-                            logging.info('Created new account for '+ emailaddr + ' for ' + newusername)
+                            thelogger.info('ASAP_Enrollment_Into_Canvas->Created new account for '+ emailaddr + ' for ' + newusername)
                             if configs['NewUserCourse'] != '':
-                                logging.info('Enrolling new user into intro student Canvas course')
+                                thelogger.info('ASAP_Enrollment_Into_Canvas->Enrolling new user into intro student Canvas course')
                             if configs['Debug'] == "True":
                                 dmsgbody += 'Enrolling ' + newenrolls['Person.Email'][i] + ' into intro student Canvas course\n'
                             coursetoenroll = configs['NewUserCourse']
@@ -394,17 +404,17 @@ elif r.status_code == 200:
                 # User has been created or login moved around, proceed to enroll student into class
                 # Look in config to see that you want to send an intro letter to people this session
                 if configs['SendIntroLetters'] == "True":
-                    logging.info("Looking if we have sent intro letter to person...")
+                    thelogger.info("Looking if we have sent intro letter to person...")
                     senttheletter = SentIntroLetters[SentIntroLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
                     if senttheletter.empty:
-                        logging.info("Going to send intro letter....")
+                        thelogger.info("Going to send intro letter....")
                         emailintroletter(newenrolls['Person.Email'][i])
                 if configs['SendCOVIDLetters'] == "True":
                 # Check to see if we are sending welcome emails to this semester's students. Purely optional
-                    logging.info("Looking if we have sent COVID letter to person...")
+                    thelogger.info("Looking if we have sent COVID letter to person...")
                     senttheCletter = SentCOVIDLetters[SentCOVIDLetters['Email'].str.contains(newenrolls['Person.Email'][i])]
                     if senttheCletter.empty:
-                        logging.info("Going to send COVID letter....")
+                        thelogger.info("Going to send COVID letter....")
                         #pass email to send optional enrollment welcome letter
                         emailCOVIDletter(newenrolls['Person.Email'][i])
             #Done sending letters
@@ -415,7 +425,7 @@ elif r.status_code == 200:
                         newenrolls['EnrollmentStatusCd'][i],
                         newenrolls['Person.Email'][i])
         else:
-            logging.info('Found course in Skip List. Course Code-> ' + newenrolls['ScheduledEvent.EventCd'][i])
+            thelogger.info('ASAP_Enrollment_Into_Canvas->Found course in Skip List. Course Code-> ' + newenrolls['ScheduledEvent.EventCd'][i])
             if configs['Debug'] == "True":
                 dmsgbody += 'Skipping enrollment for ' + newenrolls['Person.Email'][i] + ', found course code ' + newenrolls['ScheduledEvent.EventCd'][i] + ' ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + ' in the skip list.\n'
             skippedbody += 'Skipping enrollment for ' + newenrolls['Person.Email'][i] + ', found course code ' + newenrolls['ScheduledEvent.EventCd'][i] + ' ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + ' in the skip list.\n'
@@ -427,12 +437,12 @@ elif r.status_code == 200:
             lastrunplace.to_csv(lastrunplacefilename)
             dmsgbody = dmsgbody + 'Wrote previous last record back to file'
         else:
-            logging.info('Writing last record to file')
+            thelogger.info('ASAP_Enrollment_Into_Canvas->Writing last record to file')
             lastrec = newenrolls.tail(1)
             lastrec.to_csv(lastrunplacefilename)
             msgbody = 'No new enrollments or drops for this iteration of ASAP-Canvas script\n\nSkipped enrolling these as course codes were in skip list:\n\n' + skippedbody + '\n\nSad Mickey\n'
     else:
-        logging.info('Writing last record to file')
+        thelogger.info('ASAP_Enrollment_Into_Canvas->Writing last record to file')
         lastrec = newenrolls.tail(1)
         lastrec.to_csv(lastrunplacefilename)
         msgbody += 'Added ' + str(totalenrollments) + ' new Guests to classes.\n'
