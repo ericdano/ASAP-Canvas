@@ -27,5 +27,6 @@
   "SendCOVIDLetters": "True",
   "COVIDLetterPath": "E:/AEMessage/",
   "COVIDLetterFile" : "AAEVoluntaryVaccinationVerificationLetter.html",
-  "SentCOVIDLettersCSV": "SentCOVIDEmails.csv"
+  "SentCOVIDLettersCSV": "SentCOVIDEmails.csv",
+    "IsOnline":"False"
 }
