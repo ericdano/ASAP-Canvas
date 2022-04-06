@@ -206,7 +206,7 @@ def enrollstudent(coursecodetoenroll,coursetoenrollname,enrollmentstatuscd,stude
         msg.set_content(msgbody)
         s.send_message(msg)
         raise
-def mainloop()
+def mainloop():
 # Check to make sure we have an email
     if (newenrolls['Person.Email'][i] == ''):
         PanicStop('Email address is empty!!!')
