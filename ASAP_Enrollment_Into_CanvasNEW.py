@@ -426,7 +426,7 @@ elif r.status_code == 200:
         print(newenrolls['ScheduledEvent.EventCd'][i])
         thelogger.info('ASAP_Enrollment_Into_Canvas->Seeing if ' + newenrolls['ScheduledEvent.EventCd'][i] + ' is in skipped CSV')
         # This is where it looks if classes are in the skipped list CSV OR are you have enabled it to look for IsOnline from ASAP
-        if configs['IsOnline'] == False]:
+        if configs['IsOnline'] == False:
             if not (newenrolls['ScheduledEvent.EventCd'][i] in SkippedCourses['CourseCode'].unique()): 
                 thelogger.info('ASAP_Enrollment_Into_Canvas->Loop condition 1 met')
                 mainloop()
