@@ -1,6 +1,7 @@
 import pandas as pd
 import requests, json, logging, sys
 from pathlib import Path
+from logging.handlers import SysLogHandler
 
 #load configs
 confighome = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
