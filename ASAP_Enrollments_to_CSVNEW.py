@@ -18,9 +18,9 @@ if configs['logserveraddress'] is None:
     thelogger.basicConfig(filename=str(logfilename), level=logging.INFO)
 else:
     thelogger = logging.getLogger('MyLogger')
-    thelogger.setlevel(logging.DEBUG)
-    handler = logging.handlers.SysLogHandler(address = configs['logserveraddress'],514)
-    thelogger = addHandler(handler)
+    thelogger.setLevel(logging.DEBUG)
+    handler = logging.handlers.SysLogHandler(address = (configs['logserveraddress'],514))
+    thelogger.addHandler(handler)
 
 thelogger.info('Loaded config file and logfile started')
 csvfilename = sys.argv[1]
