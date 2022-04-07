@@ -73,7 +73,7 @@ def Set_globals():
 def PanicStop(panicmsgstr):
     global msgbody, skippedbody, dmsgbody
     # This gets called when we get an error we excepted for
-    thelogger.info('ASAP_Enrollment_Into_Canvas->Canvas error ' + panicmsgstr + ' Stopping imports. ')
+    thelogger.critical('ASAP_Enrollment_Into_Canvas->Canvas error ' + panicmsgstr + ' Stopping imports. ')
     print('Canvas error ' + panicmsgstr + ' Stopping imports.')
     s = smtplib.SMTP(configs['SMTPServerAddress'])
     msgbody += 'Panic!! Stopping imports on error ' + panicmsgstr +' \n\nPanic!!!\n'
@@ -198,7 +198,7 @@ def enrollstudent(coursecodetoenroll,coursetoenrollname,enrollmentstatuscd,stude
                 dmsgbody += 'Enrolled ' + studentemailaddress + ' in ' + coursetoenrollname + ' (' + coursecodetoenroll + ') \n'
     except CanvasException as ec:
                 #It all starts with figuring out if the user is in Canvas and enroll in tutorial course
-        thelogger.info('ASAP_Enrollment_Into_Canvas->Canvas error ' + str(ec) + ' Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports. ')
+        thelogger.critical('ASAP_Enrollment_Into_Canvas->Canvas error ' + str(ec) + ' Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports. ')
         print('Canvas error ' + str(ec) + ' Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports.')
         s = smtplib.SMTP(configs['SMTPServerAddress'])
         msgbody += 'Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports.\n\n\nPanic!!!\n'
@@ -209,6 +209,7 @@ def enrollstudent(coursecodetoenroll,coursetoenrollname,enrollmentstatuscd,stude
 def mainloop():
 # Check to make sure we have an email
     if (newenrolls['Person.Email'][i] == ''):
+        thelogger.critical('ASAP_Enrollment_Into_Canvas->Email address field is empty')
         PanicStop('Email address is empty!!!')
     # Now look up the user by email
     try:
@@ -289,6 +290,7 @@ def mainloop():
                 # Create an additional LOGIN for the user using the OLD email address
                     thelogger.info('ASAP_Enrollment_Into_Canvas->Created additional login for user id=' + str(user.id))
                 except CanvasException as e11:
+                    thelogger.critical('ASAP_Enrollment_Into_Canvas->Error when creating additional login for user')
                     PanicStop(str(e11) + ' when created additional login for user')
             except CanvasException as e2:
                 if str(e2) == "Not Found":
