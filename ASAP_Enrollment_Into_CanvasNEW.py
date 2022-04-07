@@ -54,9 +54,14 @@ introletterfrom = configs['SMTPAddressFrom']
 dmsg['From'] = configs['SMTPAddressFrom']
 msg['To'] = configs['SendInfoEmailAddr']
 dmsg['To'] = configs['DebugEmailAddr']
+global msgbody, skippedbody, dmsgbody, totalnewstudents, totalenrollments, totalreturningstudents
 totalnewstudents = 0 # Variable to count new students added to Canvas
 totalenrollments = 0 # Variable to count new enrollments
 totalreturningstudents = 0
+msgbody = ''
+skippedbody = ''
+dmsgbody = ''
+
 
 if configs['SendIntroLetters'] == "True":
     thelogger.info('ASAP_Enrollment_Into_Canvas->Reading Previous Sent Intro Letters file')
@@ -66,11 +71,6 @@ if configs['SendCOVIDLetters'] == "True":
     SentCOVIDLetters = pd.read_csv(Path(configs['COVIDLetterPath']+configs['SentCOVIDLettersCSV']))
 #
 #
-def Set_globals():
-    global msgbody, skippedbody, dmsgbody
-    msgbody = ''
-    skippedbody = ''
-    dmsgbody = ''
 def PanicStop(panicmsgstr):
     global msgbody, skippedbody, dmsgbody
     # This gets called when we get an error we excepted for
@@ -362,7 +362,6 @@ apikey = configs['ASAPAPIKey']
 url = configs['ASAPurl']
 headers = {'Authorization' : 'user='+userid+'&organizationId='+orgid+'&password='+password+'&apiKey='+apikey}
 thelogger.info('ASAP_Enrollment_Into_Canvas->Getting ASAP Key')
-Set_globals()
 r = requests.get(url,headers = headers)
 if r.status_code == 404:
     thelogger.info('ASAP_Enrollment_Into_Canvas->Failed to get ASAP Key')
