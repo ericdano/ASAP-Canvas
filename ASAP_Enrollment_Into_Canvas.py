@@ -73,7 +73,7 @@ def Set_globals():
 def PanicStop(panicmsgstr):
     global msgbody, skippedbody, dmsgbody
     # This gets called when we get an error we excepted for
-    thelogger.info('ASAP_Enrollment_Into_Canvas->Canvas error ' + panicmsgstr + ' Stopping imports. ')
+    thelogger.error('ASAP_Enrollment_Into_Canvas->Canvas error ' + panicmsgstr + ' Stopping imports. ')
     print('Canvas error ' + panicmsgstr + ' Stopping imports.')
     s = smtplib.SMTP(configs['SMTPServerAddress'])
     msgbody += 'Panic!! Stopping imports on error ' + panicmsgstr +' \n\nPanic!!!\n'
@@ -183,6 +183,7 @@ def enrollstudent(coursecodetoenroll,coursetoenrollname,enrollmentstatuscd,stude
                         dmsgbody += 'Dropped ' + studentemailaddress + ' from ' + coursetoenrollname +  ' (' + coursecodetoenroll + ') \n'
             if lookfordelete == False:
                 msgbody += 'Tried to Drop ' + studentemailaddress + ' from ' + coursetoenrollname +  ' (' + coursecodetoenroll + ') but they had not made it into Canvas yet. (DROPPED class before last run) \n'
+                thelogger.error('ASAP_Enrollment_Into_Canvas->Got a drop field from ASAP for ' + studentemailaddress + ' but they are not in Canvas')
         else:
             # Other ASAP things could be PEND or ENROLLED.
             enrollment = course.enroll_user(user,"StudentEnrollment",
@@ -198,7 +199,7 @@ def enrollstudent(coursecodetoenroll,coursetoenrollname,enrollmentstatuscd,stude
                 dmsgbody += 'Enrolled ' + studentemailaddress + ' in ' + coursetoenrollname + ' (' + coursecodetoenroll + ') \n'
     except CanvasException as ec:
                 #It all starts with figuring out if the user is in Canvas and enroll in tutorial course
-        thelogger.info('ASAP_Enrollment_Into_Canvas->Canvas error ' + str(ec) + ' Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports. ')
+        thelogger.critical('ASAP_Enrollment_Into_Canvas->Canvas error ' + str(ec) + ' Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports. ')
         print('Canvas error ' + str(ec) + ' Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports.')
         s = smtplib.SMTP(configs['SMTPServerAddress'])
         msgbody += 'Course code ' + coursecodetoenroll + ' - ' + coursetoenrollname + ' is not in Canvas. Stopping imports.\n\n\nPanic!!!\n'
@@ -284,6 +285,7 @@ elif r.status_code == 200:
         if not (newenrolls['ScheduledEvent.EventCd'][i] in SkippedCourses['CourseCode'].unique()) :
             # Check to make sure we have an email
             if (newenrolls['Person.Email'][i] == ''):
+                thelogger.critical('ASAP_Enrollment_Into_Canvas->Email address field is empty')
                 PanicStop('Email address is empty!!!')
             # Now look up the user by email
             try:
@@ -345,6 +347,7 @@ elif r.status_code == 200:
                                 }
                            )
                         except CanvasException as ff1:
+                            thelogger.critical('ASAP_Enrollment_Into_Canvas->Error editing user email address')
                             PanicStop(str(ff1) + ' when editing user email address') 
                         userlogins = user.get_user_logins()
                         foundanotherlogin = False
@@ -366,6 +369,7 @@ elif r.status_code == 200:
                             thelogger.info('ASAP_Enrollment_Into_Canvas->Created additional login for user id=' + str(user.id))
 
                         except CanvasException as e11:
+                            thelogger.critical('ASAP_Enrollment_Into_Canvas->Error when creating additional login for user')
                             PanicStop(str(e11) + ' when created additional login for user')
                     except CanvasException as e2:
                         if str(e2) == "Not Found":
