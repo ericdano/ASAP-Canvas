@@ -27,10 +27,11 @@ confighome = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
 with open(confighome) as f:
   configs = json.load(f)
 # Logging
-if configs['logserveraddress'] is None:
+if configs['logserveraddress'] == "":
     logfilename = Path.home() / ".ASAPCanvas" / configs['logfilename']
+    logging.basicConfig(filename=str(logfilename), level=logging.DEBUG)
     thelogger = logging.getLogger('MyLogger')
-    thelogger.basicConfig(filename=str(logfilename), level=thelogger.info)
+    thelogger.setLevel(logging.DEBUG)
 else:
     thelogger = logging.getLogger('MyLogger')
     thelogger.setLevel(logging.DEBUG)
