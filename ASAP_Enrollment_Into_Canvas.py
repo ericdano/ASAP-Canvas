@@ -244,7 +244,8 @@ elif r.status_code == 200:
                                             'ScheduledEvent.Course.IsOnline',
                                             'EnrollmentStatusCd',
                                             'ScheduledEvent.EventCd',
-                                            'StudentID','CustomerID',
+                                            'StudentID',
+                                            'CustomerID',
                                             'Person.Email',
                                             'Person.FirstName',
                                             'Person.LastName']),axis=1,inplace=True)
