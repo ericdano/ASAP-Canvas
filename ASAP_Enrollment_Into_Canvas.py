@@ -291,7 +291,7 @@ elif r.status_code == 200:
             # Now look up the user by email
             try:
                 user = canvas.get_user(newenrolls['Person.Email'][i],'sis_login_id')
-                thelogger.info(newenrolls['Person.Email'][i] + " is in Canvas")
+                thelogger.info('ASAP_Enrollment_Into_Canvas->' + newenrolls['Person.Email'][i] + ' is in Canvas')
                 if configs['Debug'] == "True":
                     dmsgbody += newenrolls['Person.Email'][i] + ' is in Canvas\n'
                 # Check to see if we are sending welcome emails to this semester's students. Purely optional
