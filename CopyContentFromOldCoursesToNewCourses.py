@@ -4,12 +4,12 @@ from canvasapi import Canvas
 from canvasapi.exceptions import CanvasException
 from pathlib import Path
 from email.message import EmailMessage
-# Useage C:\python CopyContentFromOldCoursesToNewCourses.py nameofcsv.csv "term"
+# Useage C:\python CopyContentFromOldCoursesToNewCourses.py nameofcsv.csv
 #
 # This program reads a CSV file with the fields of
 # NewSIS_ID, CurrentSIS_ID
 #
-# It will then BLANK out the course, and then copy the course (CurrentSIS_ID) to the new course (NewSIS_ID)
+# It will then BLANK out the course, and then copy the course (CurrentSIS_ID) to the new course (NewSIS_ID) OR blank out an existing course
 #
 if len(sys.argv) < 2:
     print('Script needs two arguments: python name.csv "term"')
