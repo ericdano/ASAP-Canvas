@@ -56,6 +56,16 @@ def copy_to_new_course():
     for user in users:
         #canvas_user = canvas.get_user("Email", id_type="sis_login_id")
         new_course.enroll_user(user.id, "TeacherEnrollment", enrollment={"enrollment_state": "active"})
+    users = old_course.get_users(enrollment_type=['TaEnrollment'])
+    bsiscourseid = asapcoursestocopy['NewSIS_ID'][i]
+    for user in users:
+        new_course.enroll_user(user.id,"TaEnrollment",enrollment = {
+                                "sis_course_id": bsiscourseid,
+                                "notify": True,
+                                "enrollment_state": "active",
+                                "role_id": 16
+                            })
+                    
 
 logging.info('Connecting to Canvas')
 if configs['Debug'] == "True":
