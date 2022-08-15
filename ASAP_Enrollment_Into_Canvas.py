@@ -120,7 +120,7 @@ def emailintroletter(lettertoemail):
     global SentIntroLetters, msgbody, dmsgbody
     thelogger.info('ASAP_Enrollment_Into_Canvas->Prepping to send intro letter from AE')
     IntroLetterRoot = MIMEMultipart('related')
-    IntroLetterRoot['Subject'] = 'Acalanes Adult Education Spring/Summer 2021 Enrollment'
+    IntroLetterRoot['Subject'] = 'Acalanes Adult Education Fall 2022 Enrollment'
     IntroLetterRoot['From'] = configs['SMTPAddressFrom']
     IntroLetterRoot['To'] = lettertoemail
     IntroLetterRoot.preamble = 'This is a multi-part message in MIME format.'
