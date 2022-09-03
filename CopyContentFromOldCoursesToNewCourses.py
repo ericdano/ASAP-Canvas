@@ -12,7 +12,7 @@ from email.message import EmailMessage
 # It will then BLANK out the course, and then copy the course (CurrentSIS_ID) to the new course (NewSIS_ID) OR blank out an existing course
 #
 if len(sys.argv) < 2:
-    print('Script needs two arguments: python name.csv "term"')
+    print('Script needs a filename: python name.csv')
     print('CSV file should be have headers of NewSIS_ID, CurrentSIS_ID')
     exit(0)
 csvfilename = sys.argv[1]
