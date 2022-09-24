@@ -176,7 +176,7 @@ def enrollstudent(coursecodetoenroll,coursetoenrollname,enrollmentstatuscd,stude
                 # You have to loop through all the enrollments for the class and then find the student id in the enrollment then tell it to delete it.
                 if stu.user_id == user.id:
                     lookfordelete = True
-                    stu.deactivate(task='delete')
+                    stu.deactivate(task="delete")
                     thelogger.info('ASAP_Enrollment_Into_Canvas->Deleted student from ' + coursetoenrollname)
                     msgbody += 'Dropped ' + studentemailaddress + ' from ' + coursetoenrollname +  ' (' + coursecodetoenroll + ') \n'
                     if configs['Debug'] == "True":
