@@ -445,13 +445,11 @@ elif r.status_code == 200:
             skippedbody += 'Skipping enrollment for ' + newenrolls['Person.Email'][i] + ', found course code ' + newenrolls['ScheduledEvent.EventCd'][i] + ' ' + newenrolls['ScheduledEvent.Course.CourseName'][i] + ' in the skip list.\n'
     # Send event email to interested admins on new enrolls or drops
     s = smtplib.SMTP(configs['SMTPServerAddress'])
-    DontSendEmail = False # Don't send Flag
     if msgbody == '':
         if skippedbody == '':
             msgbody = 'No new enrollments or drops for this iteration of ASAP-Canvas script\n\nSad Mickey\n'
             thelogger.info('ASAP_Enrollment_Into_Canvas->No new enrollments this script run.....sad mickey')
             lastrunplace.to_csv(lastrunplacefilename)
-            DontSendEmail = True
             dmsgbody = dmsgbody + 'Wrote previous last record back to file'
             thelogger.info('ASAP_Enrollment_Into_Canvas->Writing last record to file')
         else:
@@ -473,8 +471,7 @@ elif r.status_code == 200:
             dmsgbody += '\n\nSkipped enrolling these as course codes were in skip list:\n\n' + skippedbody + '\n'
         dmsgbody += 'wrote NEW last record to file'
     msg.set_content(msgbody)
-    if not(DontSendEmail):
-        s.send_message(msg)
+    s.send_message(msg)
     thelogger.info('ASAP_Enrollment_Into_Canvas->Sent Status emails')
 if configs['Debug'] == "True":
     print("All done!")
