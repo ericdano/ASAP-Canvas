@@ -127,7 +127,7 @@ def emailintroletter(lettertoemail):
     global SentIntroLetters, msgbody, dmsgbody
     thelogger.info('ASAP_Enrollment_Into_Canvas->Prepping to send intro letter from AE')
     IntroLetterRoot = MIMEMultipart('related')
-    IntroLetterRoot['Subject'] = 'Acalanes Adult Education Fall 2022 Enrollment'
+    IntroLetterRoot['Subject'] = configs['IntroLetterSubject']
     IntroLetterRoot['From'] = configs['SMTPAddressFrom']
     IntroLetterRoot['To'] = lettertoemail
     IntroLetterRoot.preamble = 'This is a multi-part message in MIME format.'
@@ -151,7 +151,12 @@ def emailintroletter(lettertoemail):
     smtpintroletter.connect(configs['SMTPServerAddress'])
     smtpintroletter.sendmail(configs['SMTPAddressFrom'], lettertoemail, IntroLetterRoot.as_string())
     smtpintroletter.quit()
-    SentIntroLetters = SentIntroLetters.append({'Email': lettertoemail},ignore_index=True)
+    """
+    Pandas 1.5 depreciated pd.append
+    SentCOVIDLetters = SentCOVIDLetters.append({'Email': lettertoemail},ignore_index=True)
+    """
+    tempDF = pd.DataFrame([{'Email': lettertoemail}])
+    SentIntroLetters = pd.concat([SentIntroLetters,tempDF],axis=0, ignore_index=True)
     SentIntroLetters.to_csv(Path(configs['IntroLetterPath']+configs['SentIntroLettersCSV']), index=False)
     thelogger.info('ASAP_Enrollment_Into_Canvas->Intro letter sent to ' + lettertoemail)
     if configs['Debug'] == "True":

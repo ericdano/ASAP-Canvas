@@ -5,24 +5,23 @@ import pandas as pd
 from pathlib import Path
 import requests, json, logging, smtplib, datetime, sys
 
-#
-# 
-#
-# Script to rename classes in Canvas that are from the previous term
-# We generally are keeping all previous classes in our Canvas rather than deleting them
-# However, it is confusing for the teachers to have like 5 ESL Morning classes from different terms in their dashboard
-# So, this script will RENAME a class depending on the TERM you are looking for
-# The best way to do this is to GRAB all the courses, append the new names to them
-# and then go through it again and anything in the TERM ID will be changed to the new name
-# run it like this
-# python canvas_rename_course_endofterm.py 'SUM2021' 'Summer 2021 -' 'SUM21'
-# this will look for your SIS TERM ID of FALL2020 and then prepend the second argument to the class
-#
-# suggest commenting out the LAST TWO LINES at the end of this file before you make changes to make sure things are correct!!!!!!!!
-#
-# ie the course = canvas.get_course(cid)
-# and course.update(course={'name': newname})
 
+"""
+ Script to rename classes in Canvas that are from the previous term
+ We generally are keeping all previous classes in our Canvas rather than deleting them
+ However, it is confusing for the teachers to have like 5 ESL Morning classes from different terms in their dashboard
+ So, this script will RENAME a class depending on the TERM you are looking for
+ The best way to do this is to GRAB all the courses, append the new names to them
+ and then go through it again and anything in the TERM ID will be changed to the new name
+ run it like this
+ python canvas_rename_course_endofterm.py 'SUM2021' 'Summer 2021 -' 'SUM21'
+ this will look for your SIS TERM ID of FALL2020 and then prepend the second argument to the class
+
+ suggest commenting out the LAST TWO LINES at the end of this file before you make changes to make sure things are correct!!!!!!!!
+
+ ie the course = canvas.get_course(cid)
+ and course.update(course={'name': newname})
+"""
 #load configs
 confighome = Path.home() / ".ASAPCanvas" / "ASAPCanvas.json"
 try:
