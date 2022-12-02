@@ -52,15 +52,26 @@ logging.info('Starting to rename classes')
 logging.info('going to look for ' + termidlookingfor + 'and prepend ' + prependname + 'to it')
 column_names = ["courseid","coursename","sistermid","newcoursename"]
 df = pd.DataFrame(columns = column_names)
+tempDF = pd.DataFrame(columns = column_names)
 courses=account.get_courses(include=['term','sis_term_id'])
 for i in courses:
     if i.term['sis_term_id'] == termidlookingfor:
         #print(i.id," ",i.name," ",i.term['sis_term_id'])
+        """
+        was this.....but Pandas happened....
         df = df.append({'courseid':i.id,
                'coursename':i.name,
                'sistermid':i.term['sis_term_id'],
                'newcoursename':prependname + i.name}, ignore_index=True)
+
+        """
+        tempDF = pd.DataFrame([{'courseid':i.id,
+               'coursename':i.name,
+               'sistermid':i.term['sis_term_id'],
+               'newcoursename':prependname + i.name}])
+        df = pd.concat([df,tempDF],axis=0, ignore_index=True)
 # Now go through and update the SIS_ID and Course_codes and tack on a suffex and rename the course
+print(df)
 for index, row in df.iterrows():
     bid = row["courseid"]
     c = canvas.get_course(bid)
