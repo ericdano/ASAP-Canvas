@@ -60,12 +60,15 @@ for i in asapcoursestocopy.index:
     print(asapcoursestocopy['NewSIS_ID'][i])
     try:
         asapclass = canvas.get_course(asapcoursestocopy['NewSIS_ID'][i],use_sis_id=True)
+        asapclass.update(course={'account_id':asapcoursestocopy['SubAccount'][i]})
+        #asapclass.update(course={'account_id':12})
         logging.info('Course already in Canvas.....resetting it......' + str(asapcoursestocopy['NewSIS_ID'][i]))
         print('Course already in Canvas.....resetting it......')
         asapclass.reset()
         copy_to_new_course()
     except CanvasException as e:
         if str(e) == "Not Found":
-            print('Error, this only copies content from old classes to new ones->' + asapcoursestocopy['NewSIS_ID'][i])
+            print('Error, this only copies content from old classes to new ones->' + asapcoursestocopy['NewSIS_ID'][i] + '\n')
+            print(e)
             exit()
 
