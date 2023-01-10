@@ -247,7 +247,8 @@ elif r.status_code == 200:
     if configs['Debug'] == "True":
         dmsgbody += 'Getting JSON from ASAP....\n'
     r2 = requests.get(url2,headers = header)
-    results = pd.concat([pd.json_normalize(r2.json()), pd.json_normalize(r2.json(),record_path="Students", max_level=2)], axis=1).drop(columns='Students')
+    results = pd.concat([pd.json_normalize(r2.json()), pd.json_normalize(r2.json(),record_path="Students", max_level=2)], axis=1).drop(columns=['Students'])
+    #results = pd.concat([pd.json_normalize(r2.json()), pd.json_normalize(r2.json(),record_path="Students", max_level=2)], axis=1).drop(columns='Students')
     # was drop('Students',1)
     #Drop columns we don't need
     results.drop(results.columns.difference(['CreatedDate',
