@@ -4,13 +4,19 @@ from canvasapi import Canvas
 from canvasapi.exceptions import CanvasException
 from pathlib import Path
 from email.message import EmailMessage
-# Useage C:\python CopyContentFromOldCoursesToNewCourses.py nameofcsv.csv
-#
-# This program reads a CSV file with the fields of
-# NewSIS_ID, CurrentSIS_ID
-#
-# It will then BLANK out the course, and then copy the course (CurrentSIS_ID) to the new course (NewSIS_ID) OR blank out an existing course
-#
+'''
+Useage C:\python CopyContentFromOldCoursesToNewCourses.py nameofcsv.csv
+
+This program reads a CSV file with the fields of
+NewSIS_ID, CurrentSIS_ID,SubAccount
+
+It will then BLANK out the course, and then copy the course (CurrentSIS_ID)
+to the new course (NewSIS_ID) OR blank out an existing course
+
+Subaccount is commented out right now. Was used to fix an issue updating courses and 
+putting them into the right subaccount (they were all at the root)
+
+'''
 if len(sys.argv) < 2:
     print('Script needs a filename: python name.csv')
     print('CSV file should be have headers of NewSIS_ID, CurrentSIS_ID')
@@ -60,7 +66,7 @@ for i in asapcoursestocopy.index:
     print(asapcoursestocopy['NewSIS_ID'][i])
     try:
         asapclass = canvas.get_course(asapcoursestocopy['NewSIS_ID'][i],use_sis_id=True)
-        asapclass.update(course={'account_id':asapcoursestocopy['SubAccount'][i]})
+        #asapclass.update(course={'account_id':asapcoursestocopy['SubAccount'][i]})
         #asapclass.update(course={'account_id':12})
         logging.info('Course already in Canvas.....resetting it......' + str(asapcoursestocopy['NewSIS_ID'][i]))
         print('Course already in Canvas.....resetting it......')
