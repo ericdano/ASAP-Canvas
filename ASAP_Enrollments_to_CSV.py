@@ -45,7 +45,21 @@ elif r.status_code == 200:
     r2 = requests.get(url2,headers = header)
     #print(r2)
     results = pd.concat([pd.json_normalize(r2.json()), pd.json_normalize(r2.json(),record_path="Students", max_level=2)], axis=1).drop(columns=['Students'])
-  
+      # was drop('Students',1)
+    #Drop columns we don't need
+    '''
+    results.drop(results.columns.difference(['CreatedDate',
+                                            'EventEnrollmentID',
+                                            'ScheduledEvent.Course.CourseName',
+                                            'ScheduledEvent.Course.IsOnline',
+                                            'EnrollmentStatusCd',
+                                            'ScheduledEvent.EventCd',
+                                            'StudentID',
+                                            'CustomerID',
+                                            'Person.Email',
+                                            'Person.FirstName',
+                                            'Person.LastName']),axis=1,inplace=True)
+    '''
 #    EventEnrollmentID
     #Drop columns we don't need, keep the ones we want
 #    results.drop(results.columns.difference(['CreatedDate',
