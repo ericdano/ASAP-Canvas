@@ -285,6 +285,8 @@ elif r.status_code == 200:
     if configs['Debug'] == "True":
         dmsgbody += 'Loading CSV of Classes to skip enrolling into Canvas....\n'
     #load starting record position
+    print('Results')
+    print(results)
     lastrunplace = pd.read_csv(lastrunplacefilename)
     thelogger.info('ASAP_Enrollment_Into_Canvas->Last place was ' + str(lastrunplace))
     newenrolls = results[results['EventEnrollmentID'] > lastrunplace['EventEnrollmentID'][0]]
