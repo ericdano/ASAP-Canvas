@@ -1,5 +1,5 @@
 import pandas as pd
-import requests, json, logging, smtplib, datetime, gam, arrow
+import requests, json, logging, smtplib, datetime, gam, arrow, os
 from canvasapi import Canvas
 from canvasapi.exceptions import CanvasException
 from pathlib import Path
@@ -276,14 +276,17 @@ elif r.status_code == 200:
                                             'Person.Email',
                                             'Person.FirstName',
                                             'Person.LastName']),axis=1,inplace=True)
-    # For Canvas, we only care about a few columns that ASAP gives us (hence the mass dropping of columns above)
-    # EventEnrollmentID is basically a sequence number. This is what we are going to use to find out where we are in the transcation stream
-    # EnrollmentStatusCd tells us what to do. ENROLLED and PEND mean put them in a class, DROPPED means remove them
-    # ScheduledEvent.EventCd is the SIS ID for the Course
-    # Person.Email is both the login and the Email
-    # Person.FirstName is their FirstName
-    # Person.LastName is their LastName
-    # Load last record processed
+    '''
+    For Canvas, we only care about a few columns that ASAP gives us (hence the mass dropping of columns above)
+    EventEnrollmentID is basically a sequence number. This is what we are going to use to find out where we are in the transcation stream
+    EnrollmentStatusCd tells us what to do. ENROLLED and PEND mean put them in a class, DROPPED means remove them
+    ScheduledEvent.EventCd is the SIS ID for the Course
+    Person.Email is both the login and the Email
+    Person.FirstName is their FirstName
+    Person.LastName is their LastName
+    Load last record processed
+    SkipList is a Google Sheet that is downloaded and then used to see if a class is offered but there is no Canvas for
+    '''
     thelogger.info('ASAP_Enrollment_Into_Canvas->Connecting to Canvas')
     if configs['Debug'] == "True":
         dmsgbody += 'Connecting to Canvas....\n'
@@ -294,6 +297,7 @@ elif r.status_code == 200:
         dmsgbody += 'Loading last record processed....\n'
     #Load Skipped Classes
     SkippedCourses = pd.read_csv('E:\PythonTemp\AESkipList.csv')
+    os.remove('e:\PythonTemp\AESkipList.csv')
     thelogger.info('ASAP_Enrollment_Into_Canvas->Loading Skipped List CSV')
     print(SkippedCourses)
     if configs['Debug'] == "True":
