@@ -1,5 +1,5 @@
 import pandas as pd
-import requests, json, logging, smtplib, datetime
+import requests, json, logging, smtplib, datetime, gam, arrow
 from canvasapi import Canvas
 from canvasapi.exceptions import CanvasException
 from pathlib import Path
@@ -40,6 +40,13 @@ else:
 skippedcoursescsvfilename = Path.home() / ".ASAPCanvas" / configs['SkippedCoursesCSV']
 lastrunplacefilename = Path.home() / ".ASAPCanvas" / configs['ASAPlastposfile']
 thelogger.info('ASAP_Enrollment_Into_Canvas->Loaded config file and logfile started')
+# Get Courses to Skip in Canvas from Google Sheet
+gam.initializeLogging()
+thelogger.info('ASAP_Enrollment_Into_Canvas->Getting Google Sheet and converting to CSV')
+rc2 = gam.CallGAMCommand(['gam','user', 'edannewitz@auhsdschools.org','get','drivefile','id','192q_ghNXZVwJN7oUNlByXRaYZPIOyeMgU-Q5ohrDPrw','format','csv','targetfolder','e:\PythonTemp','targetname','AESkipList.csv','overwrite','true'])
+if rc2 != 0:
+    thelogger.critical('ASAP_Enrollment_Into_Canvas->GAM Error getting Google sheet')
+
 #-----Canvas Info
 Canvas_API_URL = configs['CanvasAPIURL']
 Canvas_API_KEY = configs['CanvasAPIKey']
@@ -241,7 +248,14 @@ elif r.status_code == 200:
         dmsgbody += 'Got ASAP Key....\n'
     accesstoken = r.json()
     thelogger.info('ASAP_Enrollment_Into_Canvas->Key is ' + accesstoken)
-    url2 = configs['ASAPapiurl']
+    '''
+    Redid the API URL for dates to just get stuff from a week ago and a week from now. I forget to advance the URL dates sometimes in the .JSON file
+    '''
+    CurrentDateStr = arrow.now()
+    AWeekAgo = CurrentDateStr.shift(weeks=-1).format('YYYY-MM-DD')
+    AWeekFromNow = CurrentDateStr.shift(weeks=+1).format('YYYY-MM-DD')
+    url2 = "https://api.asapconnected.com/api/Enrollments?includeAttendance=false&classStartDate=" + AWeekAgo + "classEndDate=" + AWeekFromNow + "&enrollmentStartDate=" + AWeekAgo + "&enrollmentEndDate=" + AWeekFromNow + "&includeCourseInfo=true"
+    #url2 = configs['ASAPapiurl']
     header = {'asap_accesstoken' : accesstoken}
     thelogger.info('ASAP_Enrollment_Into_Canvas->Getting data from ASAP')
     if configs['Debug'] == "True":
@@ -279,7 +293,7 @@ elif r.status_code == 200:
     if configs['Debug'] == "True":
         dmsgbody += 'Loading last record processed....\n'
     #Load Skipped Classes
-    SkippedCourses = pd.read_csv(skippedcoursescsvfilename)
+    SkippedCourses = pd.read_csv('E:\PythonTemp\AESkipList.csv')
     thelogger.info('ASAP_Enrollment_Into_Canvas->Loading Skipped List CSV')
     print(SkippedCourses)
     if configs['Debug'] == "True":
