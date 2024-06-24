@@ -248,15 +248,17 @@ elif r.status_code == 200:
         dmsgbody += 'Got ASAP Key....\n'
     accesstoken = r.json()
     thelogger.info('ASAP_Enrollment_Into_Canvas->Key is ' + accesstoken)
+    
     '''
     Redid the API URL for dates to just get stuff from a week ago and a week from now. I forget to advance the URL dates sometimes in the .JSON file
     '''
     CurrentDateStr = arrow.now()
     AWeekAgo = CurrentDateStr.shift(weeks=-1).format('YYYY-MM-DD')
-    AWeekFromNow = CurrentDateStr.shift(weeks=+1).format('YYYY-MM-DD')
-    url2 = "https://api.asapconnected.com/api/Enrollments?includeAttendance=false&classStartDate=" + AWeekAgo + "classEndDate=" + AWeekFromNow + "&enrollmentStartDate=" + AWeekAgo + "&enrollmentEndDate=" + AWeekFromNow + "&includeCourseInfo=true"
+    AWeekFromNow = CurrentDateStr.shift(weeks=+16).format('YYYY-MM-DD')
+    url2 = "https://api.asapconnected.com/api/Enrollments?includeAttendance=false&classStartDate=" + AWeekAgo + "&classEndDate=" + AWeekFromNow + "&enrollmentStartDate=" + AWeekAgo + "&enrollmentEndDate=" + AWeekFromNow + "&includeCourseInfo=true"
     #url2 = configs['ASAPapiurl']
     header = {'asap_accesstoken' : accesstoken}
+    dmsgbody += 'Using ' + url2 + ' as ASAP String\n'
     thelogger.info('ASAP_Enrollment_Into_Canvas->Getting data from ASAP')
     if configs['Debug'] == "True":
         dmsgbody += 'Getting JSON from ASAP....\n'
@@ -287,6 +289,7 @@ elif r.status_code == 200:
     Load last record processed
     SkipList is a Google Sheet that is downloaded and then used to see if a class is offered but there is no Canvas for
     '''
+    #results.to_csv('e:\PythonTemp\Messed.csv')
     thelogger.info('ASAP_Enrollment_Into_Canvas->Connecting to Canvas')
     if configs['Debug'] == "True":
         dmsgbody += 'Connecting to Canvas....\n'
