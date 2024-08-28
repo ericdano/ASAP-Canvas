@@ -14,6 +14,11 @@ Using Python, API calls, <a href="https://pandas.pydata.org/">Pandas for Python<
 ASAP-Canvas uses Python 3.9.5, <a href="https://pandas.pydata.org/">Pandas for Python</a>, <a href="https://github.com/ucfopen/canvasapi">CanvasAPI</a>, and a few other Python libraries like requests (pip install requests
 You will also need an API key generated from your Canvas instance, and an API key from ASAP Connected.
 
+<h2>No longer being supported</h2>
+In July of 2024, Acalanes Adult Education decided to cancel it's Canvas LMS subscription. Lack of use by the staff and the students and the extremely high price of the system
+
+Hopefully people can gleen some interesting tidbits from the code samples here
+
 <h2>Installation and First Run</h2>
 <p>You FIRST need to make sure you already have all the courses you are going to be pulling from ASAP Connected ALREADY setup in Canvas. This program does not create courses in Canvas. SIS ID for each class must match the course codes you use in ASAP. In the case of Acalanes Adult Education, we are using the ScheduledEvent.Eventcd field. The course code MUST match exactly in Canvas. So if the course is 022323, you need to have it be 022323 in Canvas. You cannot drop the leading zero. It is a string field, not a numeric field. If you are NOT conducting a course in Canvas, say a ESL or ELL test class that people are taking, then you need to add this course code to the "SkipCourses" array in the ASAPCanvas.json file.</p> 
 You need <a href="https://www.python.org/downloads/">Python 3.8.5</a>
